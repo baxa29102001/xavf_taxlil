@@ -1,7 +1,17 @@
 import axiosT from "@/api/axios";
+import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
 import { getQuarter } from "@/utils/quater";
-import { Button, DatePicker, Form, Input, Modal, Select, Table } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Select,
+  Table,
+  message,
+} from "antd";
 import { useState } from "react";
 import { set } from "react-hook-form";
 import { useQuery } from "react-query";
@@ -74,32 +84,47 @@ const PerformerPrevention = () => {
   const [documentsData, setDocumentsData] = useState([]);
   const [form] = Form.useForm();
   const [organizationsList, setOrganizationList] = useState([]);
-
+  const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
   const [newPreventionModal, setNewPreventionModal] = useState(false);
 
-  useQuery(["prevention"], () => axiosT.get("/prevention/list/"), {
-    onSuccess({ data }) {
-      const arr = data.map((item: any, index: number) => ({
-        ...item,
-        index: index + 1,
+  const { refetch } = useQuery(
+    ["prevention"],
+    () => axiosT.get("/prevention/list/"),
+    {
+      onSuccess({ data }) {
+        const arr = data.map((item: any, index: number) => ({
+          ...item,
+          index: index + 1,
 
-        edit: (
-          <button
-            className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
-            onClick={() => {
-              navigate("/prevention/" + item.id);
-            }}
-          >
-            Batafsil
-          </button>
-        ),
-      }));
+          edit: (
+            <button
+              className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
+              onClick={() => {
+                navigate("/prevention/" + item.id);
+              }}
+            >
+              Batafsil
+            </button>
+          ),
 
-      setDocumentsData(arr);
-    },
-  });
+          file: (
+            <a
+              className="py-2 px-3 flex   items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer"
+              href={item.file}
+              target="_blank"
+            >
+              <FileIcon />
+              Fayl
+            </a>
+          ),
+        }));
+
+        setDocumentsData(arr);
+      },
+    }
+  );
   useQuery(
     ["preventionOrganization"],
     () =>
@@ -117,7 +142,6 @@ const PerformerPrevention = () => {
   );
 
   const onFinish = (dataPayload: any) => {
-    console.log("dataPayload", dataPayload);
     const data = {
       ...dataPayload,
       date: dataPayload.date.format("YYYY-MM-DD"),
@@ -132,13 +156,25 @@ const PerformerPrevention = () => {
       delete item.originFileObj.uid;
       formData.append("file", item.originFileObj);
     });
-    axiosT.post("/prevention/create/", formData).then((res) => {
-      console.log("res", res);
-    });
+    axiosT
+      .post("/prevention/create/", formData)
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "Muaffaqiyatli yaratildi",
+        });
+        refetch();
+        setNewPreventionModal(false);
+        form.resetFields();
+      })
+      .catch((err) => {
+        console.log("err");
+      });
   };
 
   return (
     <div className="px-4 py-5">
+      {contextHolder}
       <div className="flex items-center justify-between mb-4.5">
         <h2 className="text-[#262626] text-2xl font-semibold Monserrat ">
           Profilatika
@@ -256,7 +292,7 @@ const PerformerPrevention = () => {
                 />
               </Form.Item>{" "}
               <Form.Item label="Fayl" name={"file"}>
-                <CustomUpload />
+                <CustomUpload multiple />
               </Form.Item>
               <Form.Item
                 label="Tavsiflar"

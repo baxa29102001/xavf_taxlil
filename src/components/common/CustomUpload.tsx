@@ -5,12 +5,14 @@ import { Button, Upload } from "antd";
 
 interface CustomUploadProps {
   value?: UploadFile[];
+  multiple?: boolean;
   onChange?: (files: UploadFile[]) => void;
 }
 
 export const CustomUpload: React.FC<CustomUploadProps> = ({
   value = [],
   onChange,
+  multiple,
 }) => {
   const [fileList, setFileList] = useState<UploadFile[]>(value);
 
@@ -26,7 +28,7 @@ export const CustomUpload: React.FC<CustomUploadProps> = ({
       onSuccess("ok");
     },
     onChange: handleChange,
-    multiple: true,
+    multiple: multiple,
     fileList,
   };
 

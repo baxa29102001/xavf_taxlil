@@ -58,7 +58,7 @@ export const MainLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const [activeRoute, setActiveRoute] = useState("performer");
+  const [activeRoute, setActiveRoute] = useState("");
 
   const navigate = useNavigate();
   return (
