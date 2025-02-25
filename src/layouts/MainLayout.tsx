@@ -1,4 +1,6 @@
+import { logout } from "@/api/auth";
 import { ROLES } from "@/constants/enum";
+import AuthContext from "@/context/authContext";
 import {
   AlertOutlined,
   BarChartOutlined,
@@ -9,7 +11,7 @@ import {
   UserSwitchOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
@@ -58,16 +60,28 @@ export const MainLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const { setUserHandler } = useContext(AuthContext);
+
   const [activeRoute, setActiveRoute] = useState("");
 
   const navigate = useNavigate();
+
+  const logoutHandler = () => {
+    logout()
+      .then(() => {
+        navigate("/login");
+        setUserHandler(null);
+        localStorage.clear();
+      })
+      .catch(() => {});
+  };
   return (
     <Layout>
       <Sider
         trigger={null}
         collapsible
         collapsed={collapsed}
-        className="h-screen px-4"
+        className="h-screen px-4 "
         width={"234px"}
       >
         <Link to={"/"}>
@@ -87,7 +101,17 @@ export const MainLayout = () => {
             setActiveRoute(item.key);
             navigate(item.key);
           }}
+          style={{}}
         />
+
+        <button
+          className="bg-red-300 p-3 rounded-lg w-full"
+          onClick={() => {
+            logoutHandler();
+          }}
+        >
+          Chiqish
+        </button>
       </Sider>
       <Layout>
         <Header

@@ -37,10 +37,10 @@ const PerformerPreventionPage = React.lazy(
 );
 
 export const useConfigRoutes = () => {
-  const isUserAuthenticated = useContext(AuthContext)?.userDetails !== null;
+  const context: any = useContext(AuthContext);
   return useRoutes(
-    isUserAuthenticated
-      ? getSuitableRoutes(ROLES.IJROCHI)
+    context?.userDetails !== null
+      ? getSuitableRoutes(context?.userDetails?.role)
       : [
           {
             path: "/login",
@@ -58,6 +58,50 @@ export const useConfigRoutes = () => {
   );
 };
 
+const Routes = [
+  {
+    path: "",
+    element: <PerformerDashboardPage />,
+  },
+  {
+    path: "entity",
+    element: <PerformerEntityPage />,
+  },
+  {
+    path: "documents",
+    element: <PerformerDocumentsPage />,
+  },
+  {
+    path: "documents/:id",
+    element: <PerformerDocumentDetailPage />,
+  },
+  {
+    path: "documents/category",
+    element: <PerformerDocumentCategoriesPage />,
+  },
+  {
+    path: "documents/categories/:id",
+    element: <PerformerDocumentOrganizationsPage />,
+  },
+  {
+    path: "documents/organizations/:organizationId/:id",
+    element: <PerformerDocumentsOrganizationDetailPage />,
+  },
+
+  {
+    path: "entity/:id",
+    element: <PerformerEntityOrganizationPage />,
+  },
+  {
+    path: "entity/:organizationId/:id",
+    element: <PerformerEntityOrganizationDetailPage />,
+  },
+  {
+    path: "prevention",
+    element: <PerformerPreventionPage />,
+  },
+];
+
 function getSuitableRoutes(role: ROLES) {
   switch (role) {
     case ROLES.GIS:
@@ -67,49 +111,7 @@ function getSuitableRoutes(role: ROLES) {
         {
           path: "/performer",
           element: <MainLayout />,
-          children: [
-            {
-              path: "",
-              element: <PerformerDashboardPage />,
-            },
-            {
-              path: "entity",
-              element: <PerformerEntityPage />,
-            },
-            {
-              path: "documents",
-              element: <PerformerDocumentsPage />,
-            },
-            {
-              path: "documents/:id",
-              element: <PerformerDocumentDetailPage />,
-            },
-            {
-              path: "documents/category",
-              element: <PerformerDocumentCategoriesPage />,
-            },
-            {
-              path: "documents/categories/:id",
-              element: <PerformerDocumentOrganizationsPage />,
-            },
-            {
-              path: "documents/organizations/:organizationId/:id",
-              element: <PerformerDocumentsOrganizationDetailPage />,
-            },
-
-            {
-              path: "entity/:id",
-              element: <PerformerEntityOrganizationPage />,
-            },
-            {
-              path: "entity/:organizationId/:id",
-              element: <PerformerEntityOrganizationDetailPage />,
-            },
-            {
-              path: "prevention",
-              element: <PerformerPreventionPage />,
-            },
-          ],
+          children: Routes,
         },
         {
           path: "*",
@@ -119,8 +121,13 @@ function getSuitableRoutes(role: ROLES) {
     case ROLES.MASUL:
       return [
         {
+          path: "/masul",
+          element: <MainLayout />,
+          children: Routes,
+        },
+        {
           path: "*",
-          element: <Navigate to="/" replace />,
+          element: <Navigate to="/masul" replace />,
         },
       ];
     case ROLES.RAHBAR:

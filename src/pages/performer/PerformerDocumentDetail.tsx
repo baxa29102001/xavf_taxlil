@@ -1,7 +1,9 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
+import { ROLES } from "@/constants/enum";
+import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { LeftOutlined } from "@ant-design/icons";
-import { Collapse, Modal, Table } from "antd";
+import { Button, Collapse, Modal, Table } from "antd";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -59,6 +61,8 @@ const PerformerDocumentDetail = () => {
   const [contentData, setContentData] = useState<any>();
   const navigate = useNavigate();
 
+  const { config } = useDetectRoles();
+
   const { id } = useParams();
 
   const title = searchParams.get("title");
@@ -102,6 +106,16 @@ const PerformerDocumentDetail = () => {
       },
     }
   );
+
+  const startCaseHandler = (status: any) => {
+    axiosT
+      .patch(`/scores/masul/cases/` + contentData.id + "/", {
+        status,
+      })
+      .then((res) => {
+        console.log("res");
+      });
+  };
   return (
     <div className="px-4 py-5">
       <div className="flex items-center gap-2 mb-4.5">
@@ -131,12 +145,50 @@ const PerformerDocumentDetail = () => {
             label: "Olingan ballar tasnifi",
             children: (
               <>
-                <Table columns={columns} dataSource={[contentData]} />
+                <Table
+                  columns={columns}
+                  dataSource={[contentData]}
+                  pagination={false}
+                />
               </>
             ),
           },
         ]}
       />
+
+      {config.role === ROLES.MASUL && (
+        <div className="flex justify-end mt-5 gap-3">
+          {contentData?.status === "Yangi" ? (
+            <button
+              className="bg-[#4E75FF] text-white px-3 py-2 rounded-md cursor-pointer"
+              onClick={() => {
+                startCaseHandler("Jarayonda");
+              }}
+            >
+              Boshlash
+            </button>
+          ) : (
+            <>
+              <button
+                className="bg-[#4E75FF] text-white px-3 py-2 rounded-md cursor-pointer"
+                onClick={() => {
+                  startCaseHandler("Tasdiqlandi");
+                }}
+              >
+                Tasdiqlash
+              </button>
+              <button
+                className="bg-[#EF4444] text-white px-3 py-2 rounded-md cursor-pointer"
+                onClick={() => {
+                  startCaseHandler("Rad etildi");
+                }}
+              >
+                Rad etish
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       <Modal
         title={isModalOpen.item.criteria}

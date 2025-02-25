@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import { Input, Select, DatePicker, Table } from "antd";
 import { useQuery } from "react-query";
 import axiosT from "@/api/axios";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "@/context/authContext";
+import { ROLES } from "@/constants/enum";
+import { useDetectRoles } from "@/hooks/useDetectRoles";
 
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -104,6 +107,7 @@ const PerformerDocuments = () => {
   const [activeBtn, setActiveBtn] = useState("");
 
   const [documentsData, setDocumentsData] = useState([]);
+  const { config } = useDetectRoles();
 
   const navigate = useNavigate();
 
@@ -131,7 +135,9 @@ const PerformerDocuments = () => {
               const params = new URLSearchParams({
                 title: item.organization_name,
               }).toString();
-              navigate("/performer/documents/" + item.id + `/?${params}`);
+              navigate(
+                `/${config.mainUrl}/documents/` + item.id + `/?${params}`
+              );
             }}
           >
             Batafsil
@@ -149,15 +155,16 @@ const PerformerDocuments = () => {
         <h2 className="text-[#262626] text-2xl font-semibold Monserrat mb-4.5">
           Hujjatlar
         </h2>
-
-        <button
-          className="bg-[#4E75FF] rounded-sm py-2 px-6 text-white cursor-pointer"
-          onClick={() => {
-            navigate("/performer/documents/category");
-          }}
-        >
-          + Ma’lumot kiritish
-        </button>
+        {config?.role === ROLES.IJROCHI && (
+          <button
+            className="bg-[#4E75FF] rounded-sm py-2 px-6 text-white cursor-pointer"
+            onClick={() => {
+              navigate("/performer/documents/category");
+            }}
+          >
+            + Ma’lumot kiritish
+          </button>
+        )}
       </div>
       <div className="flex items-center gap-2 bg-white w-max p-1 mb-6">
         {btns.map((btn: any) => (
