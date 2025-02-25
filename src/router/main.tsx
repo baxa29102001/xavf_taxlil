@@ -35,6 +35,9 @@ const PerformerDocumentsOrganizationDetailPage = React.lazy(
 const PerformerPreventionPage = React.lazy(
   () => import("@/pages/performer/PerformerPrevention")
 );
+const ExaminationPage = React.lazy(
+  () => import("@/pages/examination/ExaminationPage")
+);
 
 export const useConfigRoutes = () => {
   const context: any = useContext(AuthContext);
@@ -99,6 +102,10 @@ const Routes = [
   {
     path: "prevention",
     element: <PerformerPreventionPage />,
+  },
+  {
+    path: "examination",
+    element: <ExaminationPage />,
   },
 ];
 

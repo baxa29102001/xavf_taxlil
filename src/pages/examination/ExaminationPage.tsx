@@ -13,7 +13,6 @@ import {
   message,
 } from "antd";
 import { useState } from "react";
-import { set } from "react-hook-form";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -30,30 +29,35 @@ const columns = [
   },
   {
     title: "Tashkilot STIR",
-    dataIndex: "inn",
-    key: "inn",
+    dataIndex: "organization_inn",
+    key: "organization_inn",
   },
   {
-    title: "Muddati",
+    title: "Oxirgi marta profilatika sanasi",
+    dataIndex: "last_profilaktika_date",
+    key: "last_profilaktika_date",
+  },
+  {
+    title: "Muddat",
     dataIndex: "date",
     key: "date",
   },
   {
-    title: "Kategoriyasi",
-    dataIndex: "category",
-    key: "category",
-  },
-
-  {
-    title: "Ma'sul shaxs",
-    dataIndex: "created_by",
-    key: "created_by",
+    title: "Tavsif",
+    dataIndex: "description",
+    key: "description",
   },
 
   {
     title: "Fayl",
     dataIndex: "file",
     key: "file",
+  },
+
+  {
+    title: "Inspektor",
+    dataIndex: "inspector",
+    key: "inspector",
   },
 
   {
@@ -80,18 +84,19 @@ const statusOptions: any = {
 
 const { TextArea } = Input;
 
-const PerformerPrevention = () => {
+const ExaminationPage = () => {
   const [documentsData, setDocumentsData] = useState([]);
   const [form] = Form.useForm();
   const [organizationsList, setOrganizationList] = useState([]);
+  const [inspectors, setInspectors] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
   const [newPreventionModal, setNewPreventionModal] = useState(false);
 
   const { refetch } = useQuery(
-    ["prevention"],
-    () => axiosT.get("/prevention/list/"),
+    ["examination"],
+    () => axiosT.get("/examination/list/"),
     {
       onSuccess({ data }) {
         const arr = data.map((item: any, index: number) => ({
@@ -102,7 +107,7 @@ const PerformerPrevention = () => {
             <button
               className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
               onClick={() => {
-                navigate("/prevention/" + item.id);
+                navigate("/examination/" + item.id);
               }}
             >
               Batafsil
@@ -126,9 +131,9 @@ const PerformerPrevention = () => {
     }
   );
   useQuery(
-    ["preventionOrganization"],
+    ["examinationOrganization"],
     () =>
-      axiosT.get("/prevention/organization-list/", {
+      axiosT.get("/examination/organization-list/", {
         params: {
           year: new Date().getFullYear(),
           quarter: getQuarter(new Date().getMonth() + 1),
@@ -137,6 +142,15 @@ const PerformerPrevention = () => {
     {
       onSuccess({ data }) {
         setOrganizationList(data);
+      },
+    }
+  );
+  useQuery(
+    ["examinationInspectors"],
+    () => axiosT.get("/examination/inspectors/"),
+    {
+      onSuccess({ data }) {
+        setInspectors(data);
       },
     }
   );
@@ -157,7 +171,7 @@ const PerformerPrevention = () => {
       formData.append("file", item.originFileObj);
     });
     axiosT
-      .post("/prevention/create/", formData)
+      .post("/organizations/create/", formData)
       .then(() => {
         messageApi.open({
           type: "success",
@@ -177,7 +191,7 @@ const PerformerPrevention = () => {
       {contextHolder}
       <div className="flex items-center justify-between mb-4.5">
         <h2 className="text-[#262626] text-2xl font-semibold Monserrat ">
-          Profilatika
+          Tekshirish
         </h2>
 
         <button
@@ -195,7 +209,7 @@ const PerformerPrevention = () => {
       </div>
 
       <Modal
-        title={"Profilatika yaratish"}
+        title={"Tekshiruv yaratish"}
         open={newPreventionModal}
         footer={null}
         onCancel={() => setNewPreventionModal(false)}
@@ -257,38 +271,16 @@ const PerformerPrevention = () => {
                 />
               </Form.Item>{" "}
               <Form.Item
-                label="Profilaktika turi"
-                name={"type"}
+                label="Inspektor"
+                name={"inspector"}
                 rules={[{ required: true, message: "Majburiy maydon" }]}
               >
                 <Select
                   placeholder="Tanlash"
-                  options={[
-                    {
-                      value: "seminar",
-                      label: "Seminar",
-                    },
-                    {
-                      value: "ommaviy muhokamalar",
-                      label: "Ommaviy Muhokamalar",
-                    },
-                    {
-                      value: "OAVlarda chiqishlar",
-                      label: "OAVlarda Chiqishlar",
-                    },
-                    {
-                      value: "ochiq eshiklar",
-                      label: "Ochiq Eshiklar",
-                    },
-                    {
-                      value: "tarqatma materiallarni tarqatish",
-                      label: "Tarqatma Materiallarni Tarqatish",
-                    },
-                    {
-                      value: "qo‘llanma, tavsiya va boshqa xatlar yuborish",
-                      label: "Qo‘llanma, Tavsiya va Boshqa Xatlar Yuborish",
-                    },
-                  ]}
+                  options={inspectors.map((item: any) => ({
+                    value: item.id,
+                    label: item.full_name,
+                  }))}
                 />
               </Form.Item>{" "}
               <Form.Item label="Fayl" name={"file"}>
@@ -315,4 +307,4 @@ const PerformerPrevention = () => {
   );
 };
 
-export default PerformerPrevention;
+export default ExaminationPage;

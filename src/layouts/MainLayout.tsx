@@ -8,9 +8,10 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
+  UserOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme } from "antd";
+import { Button, Dropdown, Layout, Menu, Space, theme } from "antd";
 import { useContext, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
@@ -60,7 +61,7 @@ export const MainLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const { setUserHandler } = useContext(AuthContext);
+  const { setUserHandler, userDetails } = useContext(AuthContext);
 
   const [activeRoute, setActiveRoute] = useState("");
 
@@ -83,6 +84,10 @@ export const MainLayout = () => {
         collapsed={collapsed}
         className="h-screen px-4 "
         width={"234px"}
+        style={{
+          position: "sticky",
+          top: '0'
+        }}
       >
         <Link to={"/"}>
           <div className="flex items-center gap-2 py-10 px-2">
@@ -103,21 +108,14 @@ export const MainLayout = () => {
           }}
           style={{}}
         />
-
-        <button
-          className="bg-red-300 p-3 rounded-lg w-full"
-          onClick={() => {
-            logoutHandler();
-          }}
-        >
-          Chiqish
-        </button>
       </Sider>
       <Layout>
         <Header
           style={{
-            padding: 0,
+            padding: "0 20px",
             background: colorBgContainer,
+            display: "flex",
+            justifyContent: "space-between",
           }}
         >
           <Button
@@ -130,6 +128,33 @@ export const MainLayout = () => {
               height: 64,
             }}
           />
+
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: 1,
+                  label: (
+                    <button
+                      className="bg-red-300 p-3 rounded-lg w-full"
+                      onClick={() => {
+                        logoutHandler();
+                      }}
+                    >
+                      Chiqish
+                    </button>
+                  ),
+                },
+              ],
+            }}
+          >
+            <a onClick={(e) => e.preventDefault()} className="text-black">
+              <Space>
+                <UserOutlined />
+                {userDetails?.full_name || "Foydalanuvchi"}
+              </Space>
+            </a>
+          </Dropdown>
         </Header>
         <Content
           style={{

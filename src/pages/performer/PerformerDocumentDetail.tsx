@@ -3,7 +3,7 @@ import { FileIcon } from "@/assets/icons";
 import { ROLES } from "@/constants/enum";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { LeftOutlined } from "@ant-design/icons";
-import { Button, Collapse, Modal, Table } from "antd";
+import { Button, Collapse, Form, Input, Modal, Table, message } from "antd";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -56,10 +56,14 @@ const statusOptions: any = {
   },
 };
 
+const { TextArea } = Input;
+
 const PerformerDocumentDetail = () => {
   const [searchParams] = useSearchParams();
   const [contentData, setContentData] = useState<any>();
   const navigate = useNavigate();
+
+  const [messageApi, contextHolder] = message.useMessage();
 
   const { config } = useDetectRoles();
 
@@ -67,12 +71,14 @@ const PerformerDocumentDetail = () => {
 
   const title = searchParams.get("title");
 
+  const [cancelCommentModal, setCancelCommentModal] = useState(false);
+
   const [isModalOpen, setIsModalOpen] = useState<any>({
     modal: false,
     item: {},
   });
 
-  useQuery(
+  const { refetch } = useQuery(
     ["documentDetailId"],
     () => axiosT.get("/scores/cases/all/" + id, {}),
     {
@@ -81,6 +87,7 @@ const PerformerDocumentDetail = () => {
           ...data,
           index: 1,
           reviewed_by: data?.reviewed_by || "Ma'lum emas",
+          statusOption: data.status,
           status: (
             <span
               style={{
@@ -112,12 +119,37 @@ const PerformerDocumentDetail = () => {
       .patch(`/scores/masul/cases/` + contentData.id + "/", {
         status,
       })
-      .then((res) => {
-        console.log("res");
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "Muaffaqiyatli o'zgartirildi",
+        });
+
+        refetch();
       });
   };
+
+  const onFinish = (data: any) => {
+    axiosT
+      .patch(`/scores/masul/cases/` + contentData.id + "/", {
+        status: "Rad etildi",
+        comment: data.comment,
+      })
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "Muaffaqiyatli o'zgartirildi",
+        });
+
+        setCancelCommentModal(false);
+
+        refetch();
+      });
+  };
+
   return (
     <div className="px-4 py-5">
+      {contextHolder}
       <div className="flex items-center gap-2 mb-4.5">
         <button
           onClick={() => {
@@ -135,7 +167,6 @@ const PerformerDocumentDetail = () => {
           {title}
         </h2>
       </div>
-
       <Collapse
         accordion
         defaultActiveKey={["1"]}
@@ -155,10 +186,9 @@ const PerformerDocumentDetail = () => {
           },
         ]}
       />
-
       {config.role === ROLES.MASUL && (
         <div className="flex justify-end mt-5 gap-3">
-          {contentData?.status === "Yangi" ? (
+          {contentData?.statusOption === "Yangi" ? (
             <button
               className="bg-[#4E75FF] text-white px-3 py-2 rounded-md cursor-pointer"
               onClick={() => {
@@ -180,7 +210,7 @@ const PerformerDocumentDetail = () => {
               <button
                 className="bg-[#EF4444] text-white px-3 py-2 rounded-md cursor-pointer"
                 onClick={() => {
-                  startCaseHandler("Rad etildi");
+                  setCancelCommentModal(true);
                 }}
               >
                 Rad etish
@@ -189,7 +219,16 @@ const PerformerDocumentDetail = () => {
           )}
         </div>
       )}
-
+      {config.role === ROLES.IJROCHI && (
+        <button
+          className="bg-[#4E75FF] text-white px-3 py-2 rounded-md cursor-pointer"
+          onClick={() => {
+            startCaseHandler("Jarayonda");
+          }}
+        >
+          Boshlash
+        </button>
+      )}
       <Modal
         title={isModalOpen.item.criteria}
         open={isModalOpen.modal}
@@ -204,6 +243,33 @@ const PerformerDocumentDetail = () => {
         <p>Some contents...</p>
         <p>Some contents...</p>
         <p>Some contents...</p>
+      </Modal>{" "}
+      <Modal
+        title={"Rad etish"}
+        open={cancelCommentModal}
+        footer={null}
+        onCancel={() => {
+          setIsModalOpen({
+            modal: false,
+            item: {},
+          });
+        }}
+      >
+        <Form layout="vertical" onFinish={onFinish}>
+          <Form.Item
+            name="comment"
+            label="Izoh kiriting"
+            rules={[{ required: true, message: "Izoh kiriting" }]}
+          >
+            <TextArea rows={6} placeholder="Izoh kiriting" />
+          </Form.Item>
+
+          <Form.Item label={null}>
+            <Button type="primary" htmlType="submit">
+              Yuborish
+            </Button>
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
