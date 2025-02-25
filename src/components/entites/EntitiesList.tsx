@@ -1,5 +1,7 @@
 import axiosT from "@/api/axios";
-import { FC, useState } from "react";
+import AuthContext from "@/context/authContext";
+import { useDetectRoles } from "@/hooks/useDetectRoles";
+import { FC, useContext, useState } from "react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 
@@ -8,6 +10,7 @@ interface EntitesListProps {
 }
 export const EntitesList: FC<EntitesListProps> = ({ navigateUrl }) => {
   const [categories, setCategories] = useState([]);
+  const { config } = useDetectRoles();
 
   useQuery(["categories"], () => axiosT.get("/organizations/categories/"), {
     onSuccess({ data }) {
@@ -25,7 +28,8 @@ export const EntitesList: FC<EntitesListProps> = ({ navigateUrl }) => {
         {categories.map((category: any) => (
           <Link
             to={
-              (navigateUrl ? navigateUrl : "/performer/entity/") + category.id
+              (navigateUrl ? navigateUrl : `/${config.mainUrl}/entity/`) +
+              category.id
             }
             style={{
               display: "flex",
