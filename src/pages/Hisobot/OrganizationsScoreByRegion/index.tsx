@@ -203,7 +203,7 @@ const Index = () => {
                                                                             <td className={'px-3 py-2 w-[300px] bg-white border-b border-[#f0f0f0] text-center'}>
                                                                                 {
                                                                                     // @ts-ignore
-                                                                                    scoreByRegion.criteria_scores.find((item) => item.region_id === region.region_id).score
+                                                                                    scoreByRegion.criteria_scores.find((item) => item.region_id === region.region_id)?.score
                                                                                 }
                                                                             </td>
                                                                         )
