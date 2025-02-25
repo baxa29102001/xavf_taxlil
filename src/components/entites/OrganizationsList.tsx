@@ -1,4 +1,5 @@
 import axiosT from "@/api/axios";
+import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { Table } from "antd";
 import { FC, useState } from "react";
 import { useQuery } from "react-query";
@@ -63,6 +64,10 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
   const [organizationList, setOrganizationList] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const { config } = useDetectRoles();
+
+  console.log(config);
   useQuery(
     ["organizationList", id],
     () =>
@@ -87,7 +92,7 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
               className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
               onClick={() => {
                 navigate(
-                  (navigateUrl ? navigateUrl : `/performer/entity/`) +
+                  (navigateUrl ? navigateUrl : `/${config.mainUrl}/entity/`) +
                     `${id}/${item.id}`
                 );
               }}

@@ -54,13 +54,13 @@ const LoginForm = () => {
   return (
     <>
       <div className="flex items-center">
-        <div className="bg-dark-main px-[62px] py-[81px] h-screen">
+        <div className="bg-[#1C5196] px-[62px] py-[81px] h-screen">
           <div className="">
-            <h2 className="text-[32px] text-white text-center w-[525px] Monstreat">
-              “KPI” kompleks avtomatlashtirilgan axborot tizimi
+            <h2 className="text-[32px] text-white text-center w-[525px] mb-20 Monstreat">
+              “OʻZKOMNAZORAT” INSPEKSIYASI
             </h2>
-            <div className="flex items-end h-[60vh] justify-center">
-              <img src={"/assets/login.png"} alt="" />
+            <div className="flex items-end  justify-center">
+              <img src={"/logo.svg"} alt="" className="w-[400px] h-[500px]" />
             </div>
           </div>
         </div>

@@ -42,6 +42,8 @@ const PerformerEntityOrganizationDetail = () => {
     criteria_details: [],
   });
 
+  const [fileData, setFileData] = useState({});
+
   const [isModalOpen, setIsModalOpen] = useState<any>({
     modal: false,
     item: {},
@@ -79,14 +81,13 @@ const PerformerEntityOrganizationDetail = () => {
   );
 
   const handleOpenModal = (item: any) => {
-    axiosT
-      .get("/scores/" + organizationId + "/" + id + "/cases/")
-      .then((res: any) => {
-        setIsModalOpen({
-          modal: true,
-          item,
-        });
+    axiosT.get("/scores/" + id + "/" + item.id + "/cases/").then(({ data }) => {
+      setFileData(data);
+      setIsModalOpen({
+        modal: true,
+        item,
       });
+    });
   };
 
   return (

@@ -15,7 +15,6 @@ export const CustomUpload: React.FC<CustomUploadProps> = ({
   multiple,
 }) => {
   const [fileList, setFileList] = useState<UploadFile[]>(value);
-
   const handleChange: UploadProps["onChange"] = (info) => {
     let newFileList = [...info.fileList];
     setFileList(newFileList);
