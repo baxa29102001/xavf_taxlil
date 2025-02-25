@@ -50,6 +50,14 @@ const HisobotOrganizationsScoreByRegion = React.lazy(
   () => import("@/pages/Hisobot/OrganizationsScoreByRegion")
 );
 
+const StatusByCategory = React.lazy(
+  () => import("@/pages/Hisobot/StatusByCategory")
+);
+
+const StatusByOrganizations = React.lazy(
+    () => import("@/pages/Hisobot/StatusByOrganizations")
+);
+
 export const useConfigRoutes = () => {
   const context: any = useContext(AuthContext);
 
@@ -135,6 +143,14 @@ const Routes = [
   {
     path: "hisobot/organization-scores-by-region",
     element: <HisobotOrganizationsScoreByRegion />,
+  },
+  {
+    path: "hisobot/case-status-by-category",
+    element: <StatusByCategory/>,
+  },
+  {
+    path: "hisobot/case-status-by-organization",
+    element: <StatusByOrganizations/>,
   },
 ];
 

@@ -1,8 +1,8 @@
 import {useQuery} from "react-query";
 import axiosT from "@/api/axios.ts";
-import {IOrganizationByRegion, IOrganizationScore} from "@/Interface/IHisobot.ts";
-import {Button, DatePicker, Input, Select, Space, Table} from "antd";
-import {useEffect, useState} from "react";
+import {IOrganizationByRegion} from "@/Interface/IHisobot.ts";
+import {Button, DatePicker, Input, Select, Space} from "antd";
+import {useState} from "react";
 import useDebouncedValue from "@/hooks/use-debounced-value.tsx";
 import dayjs from "dayjs";
 import PageTitle from "@/components/common/PageTitle";
@@ -12,44 +12,6 @@ import { useRef } from "react";
 import {QuarterList} from "@/constants/share.tsx";
 
 const { Search } = Input;
-
-const columns = [
-    {
-        title: 'Xavf darajasini baholash ko‘rsatkichlari',
-        dataIndex: 'name',
-        key: 'name',
-    },
-    {
-        title: 'Tashkilot STIR',
-        dataIndex: 'inn',
-        key: 'inn',
-    },
-    {
-        title: 'Umumiy ballar',
-        dataIndex: 'total_score',
-        key: 'total_score',
-    },
-    {
-        title: '1-chorak',
-        dataIndex: 'Q1_score',
-        key: 'Q1_score',
-    },
-    {
-        title: '2-chorak',
-        dataIndex: 'Q2_score',
-        key: 'Q2_score',
-    },
-    {
-        title: '3-chorak',
-        dataIndex: 'Q3_score',
-        key: 'Q3_score',
-    },
-    {
-        title: '4-chorak',
-        dataIndex: 'Q4_score',
-        key: 'Q4_score',
-    },
-];
 
 
 const Index = () => {
@@ -94,13 +56,13 @@ const Index = () => {
         setOrganizationId(organization)
     }
 
-    const {isLoading} = useQuery(['organizations-scores', searchValue, year, quarter, organizationId], ()=>
+     useQuery(['organizations-scores', searchValue, year, quarter, organizationId], ()=>
             axiosT.get<{regions: IOrganizationByRegion[]}>(`/reports/organization-scores-by-region/`, {
             params: {
                 year: year,
                 search: searchValue,
                 quarter: quarter,
-                organization_id: 40
+                organization_id: organizationId
             }
         }
     ),
@@ -115,39 +77,7 @@ const Index = () => {
     const reactToPrintFn = useReactToPrint({ contentRef });
 
 
-    const [columns, setColumns] = useState<any[]>([]);
 
-
-    useEffect(() => {
-       if(!dataSource) return
-
-        const dynamicColumns = Object.keys(dataSource[0]).map(key => {
-            console.log(key)
-            if(key === 'criteria_scores') {
-                return (
-                    {
-                        title: 'Xavf darajasini baholash ko‘rsatkichlari', // Заглавие колонки
-                        dataIndex: key, // Ключ данных
-                        key, // Уникальный ключ
-                    }
-                )
-            }else{
-                return (
-                    {
-                        title: key.charAt(0).toUpperCase() + key.slice(1), // Заглавие колонки
-                        dataIndex: key, // Ключ данных
-                        key, // Уникальный ключ
-                    }
-                )
-            }
-
-        });
-        setColumns(dynamicColumns);
-
-
-    }, [dataSource]);
-
-    console.log(dataSource, 'dataSource')
 
     return (
         <div>
@@ -226,59 +156,100 @@ const Index = () => {
                 {/*    columns={columns}*/}
                 {/*    loading={isLoading}*/}
                 {/*/>*/}
-                <table>
-                    <thead>
-                        <tr>
-                            <th className={'px-3 py-2'}>
-                                Xavf darajasini baholash ko‘rsatkichlari
-                            </th>
-                            <th className={'px-3 py-2'}>
-                                Ташкилот СТИР
-                            </th>
+
+                {
+                    dataSource  ?
+                        <table className={'w-full'}>
+                            <thead>
+                                <tr>
+                                    <th className={'px-3 py-2 bg-[#fafafa] border-r-[#f0f0f0]'}>
+                                        Хавф даражасини баҳолаш кўрсаткичлари
+                                    </th>
+                                    {
+                                        dataSource?.map((item, key) => {
+                                            // setDataIndex(dataIndex + 1)
+                                            console.log(key, 'key')
+                                            return (
+                                                <>
+                                                    <th className={'px-3 py-3 bg-[#fafafa] border-r border-r-[#f0f0f0]'}>
+                                                        {item.region}
+                                                    </th>
+                                                </>
+                                            )
+                                        })
+                                    }
+                                </tr>
+                            </thead>
+
+                            <tbody>
                             {
-                                dataSource?.map((item) => {
-                                    return (
-                                        <>
-                                            <th className={'px-3 py-2'}>
-                                                {item.region}
-                                            </th>
-                                        </>
-                                    )
-                                })
+                                <>
+
+                                {
+                                    dataSource.map((region)=> {
+                                        return (
+                                            <>
+                                                {
+                                                    region.criteria_scores.map((criteriaScore) => {
+                                                        return (
+                                                            <tr>
+                                                                <td className={'px-3 py-3 w-[300px] bg-white border-b border-[#f0f0f0]'}>
+                                                                    {criteriaScore.name}
+                                                                </td>
+                                                                {
+                                                                    dataSource.map((scoreByRegion)=> {
+
+                                                                        return (
+                                                                            <td className={'px-3 py-2 w-[300px] bg-white border-b border-[#f0f0f0] text-center'}>
+                                                                                {
+                                                                                    // @ts-ignore
+                                                                                    scoreByRegion.criteria_scores.find((item) => item.region_id === region.region_id).score
+                                                                                }
+                                                                            </td>
+                                                                        )
+                                                                    })
+                                                                }
+
+                                                            </tr>
+                                                        )
+                                                    })
+                                                }
+
+                                            </>
+                                        )
+                                    })
+                                }
+
+                                    {/*{*/}
+                                    {/*    dataSource..criteria_scores.map((score) => {*/}
+                                    {/*        return (*/}
+                                    {/*            <tr>*/}
+                                    {/*                <td className={'px-3 py-2 w-[400px]'}>*/}
+                                    {/*                    {score.name}*/}
+                                    {/*                </td>*/}
+                                    {/*                {*/}
+                                    {/*                    dataSource.map((regionScore)=> {*/}
+                                    {/*                        return (*/}
+                                    {/*                            <td>*/}
+                                    {/*                                {regionScore.criteria_scores[dataIndex].score}*/}
+                                    {/*                            </td>*/}
+                                    {/*                        )*/}
+                                    {/*                    })*/}
+                                    {/*                }*/}
+                                    {/*            </tr>*/}
+                                    {/*        )*/}
+                                    {/*    })*/}
+                                    {/*}*/}
+                                </>
+
                             }
-                        </tr>
-                    </thead>
-                    <tbody>
+                            </tbody>
 
-                            {
-                                dataSource?.map((region, index) => {
-                                    return (
-                                        <>
-                                            {
-                                                Object.keys(region.criteria_scores).map((item) => {
-                                                    return (
-                                                        <tr>
-                                                            <td className={'px-3 py-2'}>
-                                                                {region.organization_name}
-                                                            </td>
-                                                            <td className={'px-3 py-2'}>
-                                                                {region.organization_name}
-                                                            </td>
-                                                            <td className={'px-3 py-2'}>
-                                                                {region.criteria_scores.id}
-                                                            </td>
-                                                        </tr>
+                        </table>
+                    : <div>Выберете оргнизацию</div>
+                }
 
-                                                    )
-                                                })
-                                            }
-                                        </>
-                                    )
-                                })
-                            }
-                    </tbody>
 
-                </table>
             </div>
 
         </div>

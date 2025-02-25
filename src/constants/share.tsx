@@ -15,11 +15,11 @@ export const HISOBOT_LIST =  {
              label: 'Axborotlashtirish, raqamli texnologiyalar, elektron xizmatlar va raqamli servislar, axborot xavfsizligi  faoliyatida 2025-yil 1-chorak davomida o‘tkazilgan xavf tahlilining kriterilar bo‘yicha natijalari',
          },
          {
-             value: 'organizations-scores',
+             value: 'case-status-by-category',
              label: 'Тадбиркорлик субъекти фаолиятида аниқланган ва масъулларга 2025 йилнинг чорагида юборилган умумий ҳолатларнинг йўналишлар кесимидаги таҳлили',
          },
          {
-             value: 'organizations-scores',
+             value: 'case-status-by-organization',
              label: 'фаолиятида аниқланган ва масъулларга 2025 йилнинг -чорагида\n' +
                  'юборилган умумий ҳолатларнинг йўналишлар кесимидаги таҳлили',
          },
