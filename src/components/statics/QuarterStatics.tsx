@@ -13,12 +13,13 @@ const quartersOptions: any = {
 };
 export const QuarterStatics = () => {
   const [statics, setStatics] = useState<any>([]);
+
   useQuery(
     ["quartersStatics"],
     () => axiosT.get("/dashboard/risk-over-quarters/"),
     {
       onSuccess({ data }) {
-        const arr = Object.keys(data).map((item: any, index: number) => ({
+        const arr = Object.keys(data).map((item: any) => ({
           ...data[item],
           title: quartersOptions[item],
         }));

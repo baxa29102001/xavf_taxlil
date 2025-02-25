@@ -39,8 +39,20 @@ const ExaminationPage = React.lazy(
   () => import("@/pages/examination/ExaminationPage")
 );
 
+const HisobotPage = React.lazy(() => import("@/pages/Hisobot/index.tsx"));
+const HisobotOrganizationsScore = React.lazy(
+  () => import("@/pages/Hisobot/OrganizationsScore")
+);
+const HisobotOrganizationsCategoryScore = React.lazy(
+  () => import("@/pages/Hisobot/OrganizationsCategoryScore")
+);
+const HisobotOrganizationsScoreByRegion = React.lazy(
+  () => import("@/pages/Hisobot/OrganizationsScoreByRegion")
+);
+
 export const useConfigRoutes = () => {
   const context: any = useContext(AuthContext);
+
   return useRoutes(
     context?.userDetails !== null
       ? getSuitableRoutes(context?.userDetails?.role)
@@ -107,6 +119,23 @@ const Routes = [
     path: "examination",
     element: <ExaminationPage />,
   },
+
+  {
+    path: "hisobot",
+    element: <HisobotPage />,
+  },
+  {
+    path: "hisobot/organizations-scores",
+    element: <HisobotOrganizationsScore />,
+  },
+  {
+    path: "hisobot/organizations-category-scores",
+    element: <HisobotOrganizationsCategoryScore />,
+  },
+  {
+    path: "hisobot/organization-scores-by-region",
+    element: <HisobotOrganizationsScoreByRegion />,
+  },
 ];
 
 function getSuitableRoutes(role: ROLES) {
@@ -143,6 +172,10 @@ function getSuitableRoutes(role: ROLES) {
           path: "/",
           element: <MainLayout />,
           children: [],
+        },
+        {
+          path: "hisobot",
+          element: <HisobotPage />,
         },
         {
           path: "*",

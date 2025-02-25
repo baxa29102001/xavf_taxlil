@@ -49,6 +49,11 @@ const getRoutesForRole = (role: ROLES) => {
           icon: <CalculatorOutlined />,
           label: <span className="text-base font-medium">Tekshirish</span>,
         },
+        {
+          key: "hisobot",
+          icon: <CalculatorOutlined />,
+          label: <span className="text-base font-medium">Hisobot</span>,
+        },
       ];
     default:
       [];
