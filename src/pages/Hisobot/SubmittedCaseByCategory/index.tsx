@@ -15,27 +15,27 @@ const { Search } = Input;
 
 const columns = [
     {
-        title: 'Ҳолат келиб тушган йўналишлар номи\tУмумий келиб тушган ҳолатлар сони\tКелишилган ҳолатлар сони\tРад қиинган ҳолатлар сони \tЖараёндаги ҳолатлар сони ',
+        title: 'Holat kelib tushgan yo‘nalishlar nomi',
         dataIndex: 'category_name',
         key: 'category_name',
     },
     {
-        title: 'Умумий юборилган ҳолатлар сони',
+        title: 'Umumiy kelib tushgan holatlar soni',
         dataIndex: 'total_cases',
         key: 'total_cases',
     },
     {
-        title: 'Келишилган ҳолатлар сони',
+        title: 'Kelishilgan holatlar soni',
         dataIndex: 'approved_cases',
         key: 'approved_cases',
     },
     {
-        title: 'Рад қиинган ҳолатлар сони',
+        title: 'Rad qiingan holatlar soni',
         dataIndex: 'rejected_cases',
         key: 'rejected_cases',
     },
     {
-        title: 'Жараёндаги ҳолатлар сони',
+        title: 'Jarayondagi holatlar soni',
         dataIndex: 'in_progress_cases',
         key: 'in_progress_cases',
     },
@@ -51,6 +51,7 @@ const Index = () => {
     const [searchText, setSearchText] = useState('')
     const [quarter, setQuarter] = useState<number>()
     const [year, setYear] = useState<string>(currentYear.toString())
+    const [masulSelect, setMasulSelect] = useState<{label: string, value: number}[]>([]);
 
     const searchValue = useDebouncedValue(searchText, 1000)
     const onSearchChange = (text: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -58,16 +59,39 @@ const Index = () => {
     }
 
 
+    const [masulId, setMasulId] = useState<number>()
+
     const onYearChange = (year: string) => {
         const formated = dayjs(year).format('YYYY')
         setYear(formated)
     }
 
-    const {isLoading} = useQuery(['submitted-cases-by-category', searchValue, year, quarter], ()=>axiosT.get<{categories: ISubmitedCase[]}>(`/reports/submitted-cases-by-category/`, {
+    // get Masul
+    const {isLoading: isLoadingMasul} = useQuery(['masul-select'], ()=>axiosT.get<{id: number, name: string}[]>(`account/masul/`),
+        {
+            onSuccess({ data }) {
+                const formated = data.map((item)=>{
+                    return {
+                        label: item.name,
+                        value: item.id
+                    }
+                })
+                setMasulSelect(formated)
+            }
+        }
+    )
+
+
+    const onMasulChange = (ijrochi: number) => {
+        setMasulId(ijrochi)
+    }
+
+    const {isLoading} = useQuery(['submitted-cases-by-category', searchValue, year, quarter, masulId], ()=>axiosT.get<{categories: ISubmitedCase[]}>(`/reports/submitted-cases-by-category/`, {
             params: {
                 year: year,
                 search: searchValue,
-                quarter: quarter
+                quarter: quarter,
+                masul_id: masulId
             }
     }),
         {
@@ -87,7 +111,7 @@ const Index = () => {
             <div className={'grid grid-cols-12'}>
                 <div className="col-span-6">
                     <PageTitle
-                        title={'Тадбиркорлик субъекти фаолиятида аниқланган ва ижрочилардан 2025 йилнинг -чорагида барча тадбиркорлик субъектлар бўйича  келиб тушган ҳолатларнинг йўналишлар кесимидаги таҳлили'}
+                        title={'Tadbirkorlik subyekti faoliyatida aniqlangan va ijrochilardan 2025 yilning -choragida barcha tadbirkorlik subyektlar bo‘yicha kelib tushgan holatlarning yo‘nalishlar kesimidagi tahlili'}
                         back
                     />
                 </div>
@@ -127,9 +151,10 @@ const Index = () => {
                     <Space>
                         <Select
                             allowClear
-                            onChange={(quarter) => setQuarter(quarter)}
+                            onChange={(masul) => onMasulChange(masul)}
                             placeholder="Mas’ul"
-                            options={QuarterList}
+                            options={masulSelect}
+                            loading={isLoadingMasul}
                             className={'w-[250px]'}
                         />
 

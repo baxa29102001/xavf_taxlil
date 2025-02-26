@@ -1,6 +1,5 @@
 import {useQuery} from "react-query";
 import axiosT from "@/api/axios.ts";
-import {IOrganizationScore} from "@/Interface/IHisobot.ts";
 import {Button, DatePicker, Input, Select, Space, Table} from "antd";
 import {useState} from "react";
 import useDebouncedValue from "@/hooks/use-debounced-value.tsx";
@@ -13,50 +12,26 @@ import {QuarterList} from "@/constants/share.tsx";
 
 const { Search } = Input;
 
-const columns = [
-    {
-        title: 'Tashkilot nomi',
-        dataIndex: 'name',
-        key: 'name',
-    },
-    {
-        title: 'Tashkilot STIR',
-        dataIndex: 'inn',
-        key: 'inn',
-    },
-    {
-        title: 'Umumiy ballar',
-        dataIndex: 'total_score',
-        key: 'total_score',
-    },
-    {
-        title: '1-chorak',
-        dataIndex: 'Q1_score',
-        key: 'Q1_score',
-    },
-    {
-        title: '2-chorak',
-        dataIndex: 'Q2_score',
-        key: 'Q2_score',
-    },
-    {
-        title: '3-chorak',
-        dataIndex: 'Q3_score',
-        key: 'Q3_score',
-    },
-    {
-        title: '4-chorak',
-        dataIndex: 'Q4_score',
-        key: 'Q4_score',
-    },
-];
+const { Column } = Table;
+
+interface DataType {
+    id: number;
+    inn: string;
+    name: string;
+    total_score: number;
+    category_scores: {
+        category_id: number;
+        category_name: string;
+        score: number;
+    }[]
+}
 
 
 const Index = () => {
 
     const currentYear = dayjs().year();
 
-    const [dataSource, setDataSource] = useState<IOrganizationScore[]>([]);
+    const [dataSource, setDataSource] = useState<DataType[]>([]);
 
     const [searchText, setSearchText] = useState('')
     const [quarter, setQuarter] = useState<number>()
@@ -73,7 +48,7 @@ const Index = () => {
         setYear(formated)
     }
 
-    const {isLoading} = useQuery(['organizations-category-scores', searchValue, year, quarter], ()=>axiosT.get<{organizations: IOrganizationScore[]}>(`/reports/organizations-category-scores/`, {
+    const {isLoading} = useQuery(['organizations-category-scores', searchValue, year, quarter], ()=>axiosT.get<{organizations: DataType[]}>(`/reports/organizations-category-scores/`, {
             params: {
                 year: year,
                 search: searchValue,
@@ -90,6 +65,7 @@ const Index = () => {
     const contentRef = useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
 
+    console.log(dataSource, 'dataSource')
 
     return (
         <div>
@@ -97,7 +73,7 @@ const Index = () => {
             <div className={'grid grid-cols-12'}>
                 <div className="col-span-6">
                     <PageTitle
-                        title={'Tadbirkorlik sub’eklar faoliyatida 2025-yil 1-chorak davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida'}
+                        title={'Tadbirkorlik subyeklar faoliyatida 2025-yil 1-chorak (year and quarter) davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida'}
                         back
                     />
                 </div>
@@ -153,11 +129,50 @@ const Index = () => {
             </div>
 
             <div ref={contentRef}>
-                <Table
-                    dataSource={dataSource}
-                    columns={columns}
-                    loading={isLoading}
-                />
+                {/*<Table*/}
+                {/*    dataSource={dataSource}*/}
+                {/*    columns={columns}*/}
+                {/*    loading={isLoading}*/}
+                {/*/>*/}
+
+                <Table<DataType> dataSource={dataSource} loading={isLoading}>
+                    <Column title="Tashkilot STIR" dataIndex="inn" key="inn" />
+                    <Column title="Tadbirkorlik subyekti ro‘yxati" dataIndex="name" key="name" />
+                    <Column title="Umumiy ballar" dataIndex="total_score" key="total_score" />
+                    {
+                        dataSource && dataSource.length ?
+                            <>
+                                {
+                                    dataSource[0].category_scores.map((category)=>{
+                                        return(
+                                            <Column
+                                                title={category.category_name}
+                                                key={category.category_id}
+                                                render={(scores)=> {
+                                                    return(
+                                                        <div>
+                                                            {
+                                                                scores.category_scores.map((item: {id: number, category_id: number, score: number})=> {
+                                                                    if(item.category_id === category.category_id){
+                                                                        return(
+                                                                            <div key={item.id}>
+                                                                                {item.score}
+                                                                            </div>
+                                                                        )
+                                                                    }
+                                                                })
+                                                            }
+                                                        </div>
+                                                    )
+                                                }}
+                                            />
+                                        )
+                                    })
+                                }
+                            </>
+                        : null
+                    }
+                </Table>
             </div>
 
         </div>

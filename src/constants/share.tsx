@@ -4,11 +4,11 @@ export const HISOBOT_LIST =  {
      [ROLES.IJROCHI]: [
          {
              value: 'organizations-scores',
-             label: 'Tadbirkorlik sub’eklar faoliyatida 2025-yil davomida o‘tkazilgan xavf tahlili natijalari',
+             label: 'Tadbirkorlik subyeklar faoliyatida 2025-yil (year) davomida o‘tkazilgan xavf tahlili natijalari',
          },
          {
              value: 'organizations-category-scores',
-             label: 'Tadbirkorlik sub’eklar faoliyatida 2025-yil 1-chorak davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida',
+             label: 'Tadbirkorlik subyeklar faoliyatida 2025-yil 1-chorak (year and quarter) davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida',
          },
          {
              value: 'organization-scores-by-region',
@@ -16,24 +16,23 @@ export const HISOBOT_LIST =  {
          },
          {
              value: 'case-status-by-category',
-             label: 'Тадбиркорлик субъекти фаолиятида аниқланган ва масъулларга 2025 йилнинг чорагида юборилган умумий ҳолатларнинг йўналишлар кесимидаги таҳлили',
+             label: 'Tadbirkorlik subyekti faoliyatida aniqlangan va masʼullarga 2025 yilning -choragida yuborilgan umumiy holatlarning yo‘nalishlar kesimidagi tahlili',
          },
          {
              value: 'case-status-by-organization',
-             label: 'фаолиятида аниқланган ва масъулларга 2025 йилнинг -чорагида\n' +
-                 'юборилган умумий ҳолатларнинг йўналишлар кесимидаги таҳлили',
+             label: 'Faoliyatida aniqlangan va masʼullarga 2025 yilning -choragida yuborilgan umumiy holatlarning yo‘nalishlar kesimidagi tahlili',
          },
          {
              value: 'case-status-all-organizations',
-             label: 'Тадбиркорлик субъекти фаолиятида аниқланган ва масъулларга 2025 йилнинг чорагида юборилган ҳолатларнинг тадбиркорлик субъектлар кесимидаги таҳлили',
+             label: 'Tadbirkorlik subyekti faoliyatida aniqlangan va masʼullarga 2025 yilning -choragida yuborilgan holatlarning tadbirkorlik subyektlar kesimidagi tahlili',
          },
          {
              value: 'submitted-cases-by-category',
-             label: 'Тадбиркорлик субъекти фаолиятида аниқланган ва ижрочилардан 2025 йилнинг -чорагида барча тадбиркорлик субъектлар бўйича  келиб тушган ҳолатларнинг йўналишлар кесимидаги таҳлили',
+             label: 'Tadbirkorlik subyekti faoliyatida aniqlangan va ijrochilardan 2025 yilning -choragida barcha tadbirkorlik subyektlar bo‘yicha kelib tushgan holatlarning yo‘nalishlar kesimidagi tahlili',
          },
          {
              value:'submitted-cases-by-user-organization',
-             label: 'Тадбиркорлик субъекти фаолиятида аниқланган ва ижрочилардан 2025 йилнинг чорагида барча тадбиркорлик субъектлар бўйича  келиб тушган ҳолатларнинг йўналишлар кесимидаги таҳлили',
+             label: 'Tadbirkorlik subyekti faoliyatida aniqlangan va ijrochilardan 2025 yilning choragida barcha tadbirkorlik subyektlar bo‘yicha kelib tushgan holatlarning yo‘nalishlar kesimidagi tahlili',
          },
      ]
 }

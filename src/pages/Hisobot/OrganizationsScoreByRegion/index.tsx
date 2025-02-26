@@ -2,7 +2,7 @@ import {useQuery} from "react-query";
 import axiosT from "@/api/axios.ts";
 import {IOrganizationByRegion} from "@/Interface/IHisobot.ts";
 import {Button, DatePicker, Input, Select, Space} from "antd";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import useDebouncedValue from "@/hooks/use-debounced-value.tsx";
 import dayjs from "dayjs";
 import PageTitle from "@/components/common/PageTitle";
@@ -12,6 +12,7 @@ import { useRef } from "react";
 import {QuarterList} from "@/constants/share.tsx";
 
 const { Search } = Input;
+
 
 
 const Index = () => {
@@ -25,6 +26,7 @@ const Index = () => {
     const [year, setYear] = useState<string>(currentYear.toString())
     const [quarter, setQuarter] = useState<number>()
     const [organizationId, setOrganizationId] = useState<number>()
+
 
     // get Organizations
     const {isLoading: isLoadingOrganizations} = useQuery(['organizations-select'], ()=>axiosT.get<{id: number, name: string}[]>(`organizations/select/`),
@@ -56,13 +58,13 @@ const Index = () => {
         setOrganizationId(organization)
     }
 
-     useQuery(['organizations-scores', searchValue, year, quarter, organizationId], ()=>
+      useQuery(['organizations-scores', searchValue, year, quarter, organizationId], ()=>
             axiosT.get<{regions: IOrganizationByRegion[]}>(`/reports/organization-scores-by-region/`, {
             params: {
                 year: year,
                 search: searchValue,
                 quarter: quarter,
-                organization_id: organizationId
+                organization_id: 40
             }
         }
     ),
@@ -76,7 +78,31 @@ const Index = () => {
     const contentRef = useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
 
+    const [Criteries, setCriteries] = useState<{region_id: number, name: string }[]>([])
 
+    useEffect(() => {
+
+        if(!dataSource) return
+        const scores = dataSource.map((regionData)=> {
+            return regionData.criteria_scores.map(item=> {
+                return {
+                    name: item.name,
+                    region_id: item.region_id,
+                }
+            })
+        })
+        const unnested = scores.flat()
+
+        const uniqueItems = unnested.filter((item, index, self) =>
+            index === self.findIndex((t) => (t.name === item.name))
+        );
+
+        setCriteries(uniqueItems);
+
+    }, [dataSource]);
+
+    console.log(dataSource, 'data-source')
+    console.log(Criteries, 'Criteries')
 
 
     return (
@@ -85,7 +111,7 @@ const Index = () => {
             <div className={'grid grid-cols-12'}>
                 <div className="col-span-6">
                     <PageTitle
-                        title={'Tadbirkorlik sub’eklar faoliyatida 2025-yil davomida o‘tkazilgan xavf tahlili natijalari'}
+                        title={'Axborotlashtirish, raqamli texnologiyalar, elektron xizmatlar va raqamli servislar, axborot xavfsizligi  faoliyatida 2025-yil 1-chorak davomida o‘tkazilgan xavf tahlilining kriterilar bo‘yicha natijalari'}
                         back
                     />
                 </div>
@@ -150,6 +176,9 @@ const Index = () => {
             </div>
 
             <div ref={contentRef}>
+
+
+
                 {/*<Table*/}
                 {/*    rowKey="id"*/}
                 {/*    dataSource={dataSource}*/}
@@ -160,21 +189,20 @@ const Index = () => {
                 {
                     dataSource  ?
                         <table className={'w-full'}>
-                            <thead>
+                            <thead className={'bg-[#fafafa]'}>
                                 <tr>
                                     <th className={'px-3 py-2 bg-[#fafafa] border-r-[#f0f0f0]'}>
-                                        Хавф даражасини баҳолаш кўрсаткичлари
+                                        Xavf darajasini baholash ko‘rsatkichlari
                                     </th>
                                     {
-                                        dataSource?.map((item, key) => {
-                                            // setDataIndex(dataIndex + 1)
-                                            console.log(key, 'key')
+                                        dataSource?.map((item) => {
                                             return (
-                                                <>
-                                                    <th className={'px-3 py-3 bg-[#fafafa] border-r border-r-[#f0f0f0]'}>
-                                                        {item.region}
-                                                    </th>
-                                                </>
+                                                <th
+                                                    key={item.region_id}
+                                                    className={'px-3 py-3 bg-[#fafafa] border-r border-r-[#f0f0f0]'}
+                                                >
+                                                    {item.region}
+                                                </th>
                                             )
                                         })
                                     }
@@ -182,67 +210,36 @@ const Index = () => {
                             </thead>
 
                             <tbody>
-                            {
-                                <>
-
                                 {
-                                    dataSource.map((region)=> {
-                                        return (
-                                            <>
+                                    Criteries.map((criteries)=> {
+                                        return(
+                                            <tr key={criteries.name}>
+                                                <td className={'py-3 px-3 w-[300px] bg-white border-b border-[#f0f0f0]'}>
+                                                    {criteries.name}
+                                                </td>
                                                 {
-                                                    region.criteria_scores.map((criteriaScore) => {
-                                                        return (
-                                                            <tr>
-                                                                <td className={'px-3 py-3 w-[300px] bg-white border-b border-[#f0f0f0]'}>
-                                                                    {criteriaScore.name}
-                                                                </td>
+                                                    dataSource.map((score)=> {
+                                                        return(
+                                                            <td key={score.region_id} className={'bg-white text-center  border-b border-[#f0f0f0]'}>
                                                                 {
-                                                                    dataSource.map((scoreByRegion)=> {
-
-                                                                        return (
-                                                                            <td className={'px-3 py-2 w-[300px] bg-white border-b border-[#f0f0f0] text-center'}>
-                                                                                {
-                                                                                    // @ts-ignore
-                                                                                    scoreByRegion.criteria_scores.find((item) => item.region_id === region.region_id)?.score
-                                                                                }
-                                                                            </td>
-                                                                        )
+                                                                    score.criteria_scores.map((item)=> {
+                                                                        if(item.region_id === score.region_id && criteries.name === item.name){
+                                                                            return (
+                                                                                <div>
+                                                                                    {item.score}
+                                                                                </div>
+                                                                            )
+                                                                        }
                                                                     })
                                                                 }
-
-                                                            </tr>
+                                                            </td>
                                                         )
                                                     })
                                                 }
-
-                                            </>
+                                            </tr>
                                         )
                                     })
                                 }
-
-                                    {/*{*/}
-                                    {/*    dataSource..criteria_scores.map((score) => {*/}
-                                    {/*        return (*/}
-                                    {/*            <tr>*/}
-                                    {/*                <td className={'px-3 py-2 w-[400px]'}>*/}
-                                    {/*                    {score.name}*/}
-                                    {/*                </td>*/}
-                                    {/*                {*/}
-                                    {/*                    dataSource.map((regionScore)=> {*/}
-                                    {/*                        return (*/}
-                                    {/*                            <td>*/}
-                                    {/*                                {regionScore.criteria_scores[dataIndex].score}*/}
-                                    {/*                            </td>*/}
-                                    {/*                        )*/}
-                                    {/*                    })*/}
-                                    {/*                }*/}
-                                    {/*            </tr>*/}
-                                    {/*        )*/}
-                                    {/*    })*/}
-                                    {/*}*/}
-                                </>
-
-                            }
                             </tbody>
 
                         </table>

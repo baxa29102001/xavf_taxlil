@@ -15,32 +15,33 @@ const { Search } = Input;
 
 const columns = [
     {
-        title: 'Tashkilot nomi',
-        dataIndex: 'organization_name',
-        key: 'organization_name',
-    },
-    {
-        title: 'ИНН',
+        title: 'INN',
         dataIndex: 'inn',
         key: 'inn',
     },
     {
-        title: 'Умумий юборилган ҳолатлар сони',
+        title: 'Tadbirkorlik subyekti ro‘yxati',
+        dataIndex: 'organization_name',
+        key: 'organization_name',
+    },
+
+    {
+        title: 'Umumiy yuborilgan holatlar soni',
         dataIndex: 'total_cases_count',
         key: 'total_cases_count',
     },
     {
-        title: 'Келишилган ҳолатлар сони',
+        title: 'Kelishilgan holatlar soni',
         dataIndex: 'approved_count',
         key: 'approved_count',
     },
     {
-        title: 'Рад қиинган ҳолатлар сони',
+        title: 'Rad qiingan holatlar soni',
         dataIndex: 'rejected_count',
         key: 'rejected_count',
     },
     {
-        title: 'Жараёндаги ҳолатлар сони',
+        title: 'Jarayondagi holatlar soni',
         dataIndex: 'in_progress_count',
         key: 'in_progress_count',
     },
@@ -53,11 +54,13 @@ const Index = () => {
 
     const [dataSource, setDataSource] = useState<IStatusAllOrganization[]>([]);
     const [organizationsSelect, setOrganizationsSelect] = useState<{label: string, value: number}[]>([]);
+    const [ijrochiSelect, setijrochiSelect] = useState<{label: string, value: number}[]>([]);
 
     const [searchText, setSearchText] = useState('')
     const [quarter, setQuarter] = useState<number>()
     const [year, setYear] = useState<string>(currentYear.toString())
     const [organizationId, setOrganizationId] = useState<number>()
+    const [ijrochiId, setIjrochiId] = useState<number>()
 
     // get Organizations
     const {isLoading: isLoadingOrganizations} = useQuery(['organizations-select'], ()=>axiosT.get<{id: number, name: string}[]>(`organizations/select/`),
@@ -74,6 +77,21 @@ const Index = () => {
         }
     )
 
+    // get Ijrochi
+    const {isLoading: isLoadingIjrochi} = useQuery(['ijrochi-select'], ()=>axiosT.get<{id: number, name: string}[]>(`account/ijrochi/`),
+        {
+            onSuccess({ data }) {
+                const formated = data.map((item)=>{
+                    return {
+                        label: item.name,
+                        value: item.id
+                    }
+                })
+                setijrochiSelect(formated)
+            }
+        }
+    )
+
     const searchValue = useDebouncedValue(searchText, 1000)
     const onSearchChange = (text: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setSearchText(text.target.value)
@@ -85,12 +103,13 @@ const Index = () => {
         setYear(formated)
     }
 
-    const {isLoading} = useQuery(['case-status-all-organizations', searchValue, year, quarter, organizationId], ()=>axiosT.get<{organizations: IStatusAllOrganization[]}>(`/reports/case-status-all-organizations/`, {
+    const {isLoading} = useQuery(['case-status-all-organizations', searchValue, year, quarter, organizationId, ijrochiId], ()=>axiosT.get<{organizations: IStatusAllOrganization[]}>(`/reports/case-status-all-organizations/`, {
             params: {
                 year: year,
                 search: searchValue,
                 quarter: quarter,
-                organizationId: organizationId
+                organizationId: organizationId,
+                ijrochi_id: ijrochiId
             }
     }),
         {
@@ -104,6 +123,10 @@ const Index = () => {
         setOrganizationId(organization)
     }
 
+    const onIjrochiChange = (ijrochi: number) => {
+        setIjrochiId(ijrochi)
+    }
+
     const contentRef = useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
 
@@ -114,7 +137,7 @@ const Index = () => {
             <div className={'grid grid-cols-12'}>
                 <div className="col-span-6">
                     <PageTitle
-                        title={'Тадбиркорлик субъекти фаолиятида аниқланган ва масъулларга 2025 йилнинг чорагида юборилган ҳолатларнинг тадбиркорлик субъектлар кесимидаги таҳлили'}
+                        title={'Tadbirkorlik subyekti faoliyatida aniqlangan va masʼullarga 2025 yilning -choragida yuborilgan holatlarning tadbirkorlik subyektlar kesimidagi tahlili'}
                         back
                     />
                 </div>
@@ -155,10 +178,10 @@ const Index = () => {
 
                         <Select
                             allowClear
-                            onChange={(organization) => onOrganizationChange(organization)}
+                            onChange={(ijrochi) => onIjrochiChange(ijrochi)}
                             placeholder="Ijrochi"
-                            options={organizationsSelect}
-                            loading={isLoadingOrganizations}
+                            options={ijrochiSelect}
+                            loading={isLoadingIjrochi}
                             className={'w-[250px]'}
                         />
                         <Select
