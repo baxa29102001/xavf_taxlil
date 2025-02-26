@@ -95,15 +95,13 @@ const Index = () => {
     }),
         {
             onSuccess({ data }) {
-               setDataSource(data.organizations);
+               setDataSource(data.organizations)
             }
         }
     )
 
     const contentRef = useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({ contentRef });
-
-
     return (
         <div>
 
