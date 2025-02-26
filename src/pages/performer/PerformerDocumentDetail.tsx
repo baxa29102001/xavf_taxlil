@@ -1,9 +1,23 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
+import { CustomUpload } from "@/components/common/CustomUpload";
 import { ROLES } from "@/constants/enum";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
-import { LeftOutlined } from "@ant-design/icons";
-import { Button, Collapse, Form, Input, Modal, Table, message } from "antd";
+import { DeleteOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Collapse,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  Space,
+  Table,
+  message,
+} from "antd";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -64,6 +78,12 @@ const PerformerDocumentDetail = () => {
   const navigate = useNavigate();
 
   const [messageApi, contextHolder] = message.useMessage();
+  const [fileData, setFileData] = useState([]);
+  const [form] = Form.useForm();
+  const [fileAddModal, setFileAddModal] = useState<any>({
+    modal: false,
+    item: {},
+  });
 
   const { config } = useDetectRoles();
 
@@ -77,6 +97,55 @@ const PerformerDocumentDetail = () => {
     modal: false,
     item: {},
   });
+
+  const [files, setFiles] = useState([{ id: 1 }]);
+
+  const addFile = () => {
+    setFiles([...files, { id: Date.now() }]);
+  };
+
+  const removeFile = (id: number) => {
+    setFiles(files.filter((file) => file.id !== id));
+  };
+
+  const onFinishFileAdd = (values: any) => {
+    const formData = new FormData();
+
+    const arr = values.files.map((value: any) => {
+      delete value.uploaded_files[0].originFileObj.uid;
+      const data = value.uploaded_files[0].originFileObj;
+      return {
+        ...value,
+        deadlines: value.deadlines.format("YYYY-MM-DD"),
+        uploaded_files: data,
+      };
+    });
+
+    arr.forEach((item: any) => {
+      Object.keys(item).forEach((key: any) => {
+        formData.append(key, item[key]);
+      });
+    });
+
+    formData.append("organization", JSON.stringify(Number(id)));
+    formData.append("criteria", JSON.stringify(contentData?.id));
+
+    axiosT
+      .patch(`/scores/cases/${contentData?.id}/resend/`, formData)
+      .then((res) => {
+        console.log("res", res);
+
+        messageApi.open({
+          type: "success",
+          content: "Muaffaqiyatli yaratildi",
+        });
+        setFileAddModal({
+          modal: false,
+          item: {},
+        });
+        form.resetFields();
+      });
+  };
 
   const { refetch } = useQuery(
     ["documentDetailId"],
@@ -102,7 +171,9 @@ const PerformerDocumentDetail = () => {
 
           file: (
             <button
-              onClick={() => setIsModalOpen({ modal: true, item: data })}
+              onClick={() => {
+                setIsModalOpen({ modal: true, item: data });
+              }}
               className="bg-[#DCE4FF] border rounded-md cursor-pointer border-[#4E75FF] text-[#4E75FF] py-2 px-3 flex items-center gap-2"
             >
               <FileIcon />
@@ -219,20 +290,27 @@ const PerformerDocumentDetail = () => {
           )}
         </div>
       )}
-      {config.role === ROLES.IJROCHI && (
-        <button
-          className="bg-[#4E75FF] text-white px-3 py-2 rounded-md cursor-pointer"
-          onClick={() => {
-            startCaseHandler("Jarayonda");
-          }}
-        >
-          Boshlash
-        </button>
-      )}
+      {config.role === ROLES.IJROCHI &&
+        contentData?.statusOption === "Rad etildi" && (
+          <div className="flex justify-end mt-5 gap-3">
+            <button
+              className="bg-[#4E75FF] text-white px-3 py-2 rounded-md cursor-pointer"
+              onClick={() => {
+                // startCaseHandler("Jarayonda");
+                setFileAddModal({
+                  modal: true,
+                  item: contentData,
+                });
+              }}
+            >
+              Qayta yuborish
+            </button>
+          </div>
+        )}
       <Modal
         title={isModalOpen.item.criteria}
         open={isModalOpen.modal}
-        onOk={() => {}}
+        footer={null}
         onCancel={() => {
           setIsModalOpen({
             modal: false,
@@ -240,9 +318,26 @@ const PerformerDocumentDetail = () => {
           });
         }}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <div className="mt-6">
+          {isModalOpen?.item?.files?.map((file: any, index: number) => {
+            return (
+              <div className="flex items-center justify-between">
+                <p>
+                  {index + 1}. {file?.description}, {file?.deadline}
+                  {","}
+                  {file?.clauses_number}
+                </p>
+
+                <a href={file?.file_url} target="_blank">
+                  <div className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer ">
+                    <FileIcon />
+                    Fayl
+                  </div>
+                </a>
+              </div>
+            );
+          })}
+        </div>
       </Modal>{" "}
       <Modal
         title={"Rad etish"}
@@ -270,6 +365,119 @@ const PerformerDocumentDetail = () => {
             </Button>
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title={"Fayl biriktirish"}
+        open={fileAddModal.modal}
+        footer={null}
+        okText="Yuborish"
+        cancelText="Bekor qilish"
+        width={"90%"}
+        onCancel={() => {
+          setFileAddModal({
+            modal: false,
+            item: {},
+          });
+        }}
+      >
+        <>
+          <Form form={form} layout="vertical" onFinish={onFinishFileAdd}>
+            <div className="grid grid-cols-4 gap-4">
+              {files.map((file, index) => (
+                <Card key={file.id} style={{ marginBottom: 10 }}>
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    <Form.Item
+                      label="Fayl"
+                      name={["files", index, "uploaded_files"]}
+                      rules={[
+                        { required: true, message: "Bandlar sonini kiriting!" },
+                      ]}
+                    >
+                      <CustomUpload multiple={false} />
+                    </Form.Item>
+                    <Form.Item
+                      label="Bandlar soni"
+                      name={["files", index, "clauses_numbers"]}
+                      rules={[
+                        { required: true, message: "Bandlar sonini kiriting!" },
+                      ]}
+                    >
+                      <InputNumber
+                        min={1}
+                        placeholder="Bandlar soni"
+                        style={{ width: "100%" }}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Tugash sanasi"
+                      name={["files", index, "deadlines"]}
+                      rules={[
+                        { required: true, message: "Tugash sanasini tanlang!" },
+                      ]}
+                    >
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        style={{ width: "100%" }}
+                      />
+                    </Form.Item>
+
+                    <Form.Item
+                      label="Ko'rsatma turi"
+                      name={["files", index, "file_types"]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Ko'rsatma turini tanlang!",
+                        },
+                      ]}
+                    >
+                      <Select
+                        placeholder="Ko'rsatma turini tanlang"
+                        options={[
+                          {
+                            label: "Taqdimnoma",
+                            value: 1,
+                          },
+                          {
+                            label: "Ko'rsatma",
+                            value: 2,
+                          },
+                        ]}
+                      />
+                    </Form.Item>
+
+                    {/* Faylni o‘chirish tugmasi */}
+                    {files.length > 1 && (
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => removeFile(file.id)}
+                      >
+                        O'chirish
+                      </Button>
+                    )}
+                  </Space>
+                </Card>
+              ))}
+            </div>
+
+            <Button
+              type="dashed"
+              onClick={addFile}
+              icon={<PlusOutlined />}
+              block
+            >
+              Yangi fayl qo‘shish
+            </Button>
+
+            <Form.Item style={{ marginTop: 20 }}>
+              <Button type="primary" htmlType="submit">
+                Yuborish
+              </Button>
+            </Form.Item>
+          </Form>
+        </>
       </Modal>
     </div>
   );

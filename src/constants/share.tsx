@@ -38,20 +38,20 @@ export const HISOBOT_LIST =  {
 }
 
 export const QuarterList = [
-    {
-        label: 'Chorak-1',
-        value: 1
-    },
-    {
-        label: 'Chorak-2',
-        value: 2
-    },
-    {
-        label: 'Chorak-3',
-        value: 3
-    },
-    {
-        label: 'Chorak-4',
-        value: 4
-    }
-]
+  {
+    label: "Chorak-1",
+    value: 1,
+  },
+  {
+    label: "Chorak-2",
+    value: 2,
+  },
+  {
+    label: "Chorak-3",
+    value: 3,
+  },
+  {
+    label: "Chorak-4",
+    value: 4,
+  },
+];

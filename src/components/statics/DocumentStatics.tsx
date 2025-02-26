@@ -25,7 +25,7 @@ export const DocumentStatics = () => {
       <h2 className="text-[#05004E] font-semibold text-[20px]">
         Hujjatlar holati bo’yicha
       </h2>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <DonutChart
           value={statics.Tasdiqlandi}
           colors={["#3CD856", "rgba(59, 209, 84, 0.20)"]}
@@ -35,6 +35,16 @@ export const DocumentStatics = () => {
           value={statics["Rad etildi"]}
           colors={["#F55757", "#FFE7E7"]}
           title="Rad etilgan"
+        />
+        <DonutChart
+          value={statics["Yangi"]}
+          colors={["#2D9CDB", "rgba(45, 156, 219, 0.15)"]}
+          title="Yangi"
+        />{" "}
+        <DonutChart
+          value={statics["Jarayonda"]}
+          colors={["#FFB219", "#FAEFDA"]}
+          title="Jarayonda"
         />
       </div>
     </div>
