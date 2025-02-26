@@ -233,7 +233,7 @@ export const OrganizationDetail = () => {
         <p>Some contents...</p>
         <p>Some contents...</p>
         <p>Some contents...</p>
-      </Modal>{" "}
+      </Modal>
       <Modal
         title={"Fayl biriktirish"}
         open={fileAddModal.modal}

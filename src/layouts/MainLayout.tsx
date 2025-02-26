@@ -16,9 +16,48 @@ import { useContext, useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
+const routesOption = [
+  {
+    key: "",
+    icon: <BarChartOutlined />,
+    label: <span className="text-base font-medium">Dashboard</span>,
+  },
+  {
+    key: "entity",
+    icon: <UserSwitchOutlined />,
+    label: (
+      <span className="text-base font-medium">Tadbirkorlik subyektlari</span>
+    ),
+  },
+  {
+    key: "documents",
+    icon: <UploadOutlined />,
+    label: <span className="text-base font-medium">Hujjatlar</span>,
+  },
+  {
+    key: "prevention",
+    icon: <AlertOutlined />,
+    label: <span className="text-base font-medium">Profilatika</span>,
+  },
+  {
+    key: "examination",
+    icon: <CalculatorOutlined />,
+    label: <span className="text-base font-medium">Tekshirish</span>,
+  },
+  {
+    key: "hisobot",
+    icon: <CalculatorOutlined />,
+    label: <span className="text-base font-medium">Hisobot</span>,
+  },
+];
+
 const getRoutesForRole = (role: ROLES) => {
   switch (role) {
     case ROLES.IJROCHI:
+      return routesOption;
+    case ROLES.MASUL:
+      return routesOption;
+    case ROLES.RAHBAR:
       return [
         {
           key: "",
@@ -34,21 +73,13 @@ const getRoutesForRole = (role: ROLES) => {
             </span>
           ),
         },
-        {
-          key: "documents",
-          icon: <UploadOutlined />,
-          label: <span className="text-base font-medium">Hujjatlar</span>,
-        },
-        {
-          key: "prevention",
-          icon: <AlertOutlined />,
-          label: <span className="text-base font-medium">Profilatika</span>,
-        },
+
         {
           key: "examination",
           icon: <CalculatorOutlined />,
           label: <span className="text-base font-medium">Tekshirish</span>,
         },
+
         {
           key: "hisobot",
           icon: <CalculatorOutlined />,
@@ -91,7 +122,7 @@ export const MainLayout = () => {
         width={"234px"}
         style={{
           position: "sticky",
-          top: '0'
+          top: "0",
         }}
       >
         <Link to={"/"}>
@@ -106,7 +137,7 @@ export const MainLayout = () => {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={[activeRoute]}
-          items={getRoutesForRole(ROLES.IJROCHI)}
+          items={getRoutesForRole(userDetails.role)}
           onClick={(item: any) => {
             setActiveRoute(item.key);
             navigate(item.key);

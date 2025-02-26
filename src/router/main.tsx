@@ -55,7 +55,7 @@ const StatusByCategory = React.lazy(
 );
 
 const StatusByOrganizations = React.lazy(
-    () => import("@/pages/Hisobot/StatusByOrganizations")
+  () => import("@/pages/Hisobot/StatusByOrganizations")
 );
 
 export const useConfigRoutes = () => {
@@ -146,11 +146,11 @@ const Routes = [
   },
   {
     path: "hisobot/case-status-by-category",
-    element: <StatusByCategory/>,
+    element: <StatusByCategory />,
   },
   {
     path: "hisobot/case-status-by-organization",
-    element: <StatusByOrganizations/>,
+    element: <StatusByOrganizations />,
   },
 ];
 
@@ -185,17 +185,14 @@ function getSuitableRoutes(role: ROLES) {
     case ROLES.RAHBAR:
       return [
         {
-          path: "/",
+          path: "/rahbar",
           element: <MainLayout />,
-          children: [],
+          children: Routes,
         },
-        {
-          path: "hisobot",
-          element: <HisobotPage />,
-        },
+
         {
           path: "*",
-          element: <Navigate to="/" replace />,
+          element: <Navigate to="/rahbar" replace />,
         },
       ];
     default:

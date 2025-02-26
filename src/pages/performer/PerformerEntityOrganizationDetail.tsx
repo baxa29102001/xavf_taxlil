@@ -42,7 +42,7 @@ const PerformerEntityOrganizationDetail = () => {
     criteria_details: [],
   });
 
-  const [fileData, setFileData] = useState({});
+  const [fileData, setFileData] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState<any>({
     modal: false,
@@ -138,6 +138,7 @@ const PerformerEntityOrganizationDetail = () => {
         title={isModalOpen.item.name}
         open={isModalOpen.modal}
         onOk={() => {}}
+        footer={null}
         onCancel={() => {
           setIsModalOpen({
             modal: false,
@@ -145,9 +146,27 @@ const PerformerEntityOrganizationDetail = () => {
           });
         }}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <div className="mt-6">
+          {fileData.map((item: any, index: number) => {
+            const file = item.files[0];
+            return (
+              <div className="flex items-center justify-between">
+                <p>
+                  {index + 1}. {file?.description}, {file?.deadline}
+                  {","}
+                  {file?.clauses_number}
+                </p>
+
+                <a href={file?.file_url} target="_blank">
+                  <div className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer ">
+                    <FileIcon />
+                    Fayl
+                  </div>
+                </a>
+              </div>
+            );
+          })}
+        </div>
       </Modal>
     </div>
   );
