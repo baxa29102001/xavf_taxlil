@@ -14,14 +14,14 @@ const { Search } = Input;
 
 const columns = [
     {
-        title: 'Tashkilot nomi',
-        dataIndex: 'name',
-        key: 'name',
-    },
-    {
         title: 'Tashkilot STIR',
         dataIndex: 'inn',
         key: 'inn',
+    },
+    {
+        title: 'Tadbirkorlik subyekti nomi',
+        dataIndex: 'name',
+        key: 'name',
     },
     {
         title: 'Umumiy ballar',

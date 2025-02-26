@@ -15,27 +15,27 @@ const { Search } = Input;
 
 const columns = [
     {
-        title: 'Tashkilot nomi',
+        title: 'Holat yuborilgan yo‘nalishlar nomi',
         dataIndex: 'category_name',
         key: 'category_name',
     },
     {
-        title: 'Умумий юборилган ҳолатлар сони',
+        title: 'Umumiy yuborilgan holatlar soni',
+        dataIndex: 'total_cases_count',
+        key: 'total_cases_count',
+    },
+    {
+        title: 'Kelishilgan holatlar soni',
         dataIndex: 'approved_count',
         key: 'approved_count',
     },
     {
-        title: 'Келишилган ҳолатлар сони',
-        dataIndex: 'category_id',
-        key: 'category_id',
-    },
-    {
-        title: 'Рад қиинган ҳолатлар сони',
+        title: 'Rad qiingan holatlar soni',
         dataIndex: 'rejected_count',
         key: 'rejected_count',
     },
     {
-        title: 'Жараёндаги ҳолатлар сони',
+        title: 'Jarayondagi holatlar soni',
         dataIndex: 'in_progress_count',
         key: 'in_progress_count',
     },
@@ -87,7 +87,7 @@ const Index = () => {
             <div className={'grid grid-cols-12'}>
                 <div className="col-span-6">
                     <PageTitle
-                        title={'Tadbirkorlik sub’eklar faoliyatida 2025-yil 1-chorak davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida'}
+                        title={'Tadbirkorlik subyekti faoliyatida aniqlangan va masʼullarga 2025 yilning -choragida yuborilgan umumiy holatlarning yo‘nalishlar kesimidagi tahlili'}
                         back
                     />
                 </div>
