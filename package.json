@@ -18,6 +18,7 @@
     "dayjs": "^1.11.13",
     "highcharts": "^12.1.2",
     "highcharts-react-official": "^3.2.1",
+    "or": "^0.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",

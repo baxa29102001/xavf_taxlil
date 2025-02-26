@@ -58,6 +58,16 @@ const StatusByOrganizations = React.lazy(
   () => import("@/pages/Hisobot/StatusByOrganizations")
 );
 
+const StatusAllOrganizations = React.lazy(
+    () => import("@/pages/Hisobot/StatusAllOrganizations")
+);
+const SubmittedCaseByCategory = React.lazy(
+    () => import("@/pages/Hisobot/SubmittedCaseByCategory")
+);
+const SubmittedCaseByUserOrganization = React.lazy(
+    () => import("@/pages/Hisobot/SubmittedCaseByUserOrganization")
+);
+
 export const useConfigRoutes = () => {
   const context: any = useContext(AuthContext);
 
@@ -151,6 +161,18 @@ const Routes = [
   {
     path: "hisobot/case-status-by-organization",
     element: <StatusByOrganizations />,
+  },
+  {
+    path: "hisobot/case-status-all-organizations",
+    element: <StatusAllOrganizations/>,
+  },
+  {
+    path: "hisobot/submitted-cases-by-category",
+    element: <SubmittedCaseByCategory/>,
+  },
+  {
+    path: "hisobot/submitted-cases-by-user-organization",
+    element: <SubmittedCaseByUserOrganization/>,
   },
 ];
 
