@@ -106,7 +106,7 @@ const Index = () => {
                             color="primary"
                             variant="outlined"
                             target={'_blank'}
-                            href={`${axiosT.defaults.baseURL}/reports/organizations-category-scores/?year=${year}&export=excel`}
+                            href={`${axiosT.defaults.baseURL}/reports/case-status-by-category/?year=${year}&export=excel`}
                         >
                             Excel yuklab olish
                         </Button>
