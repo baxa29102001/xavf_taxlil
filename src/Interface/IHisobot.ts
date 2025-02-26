@@ -32,3 +32,33 @@ export interface IStatusBuCategory {
     rejected_count: number;
     total_cases_count: number;
 }
+
+export interface IStatusAllOrganization {
+    organization_id: number;
+    organization_name: string;
+    inn: number;
+    new_count: number;
+    rejected_count: number;
+    approved_count: number;
+    total_cases_count: number;
+    in_progress_count: number;
+}
+
+export interface ISubmitedCase {
+    category_id: number;
+    category_name: string;
+    total_cases: number;
+    approved_cases: number;
+    rejected_cases: number;
+    in_progress_cases: number;
+}
+
+export interface ISubmitedCaseUserOrganization {
+    organization_id: number;
+    organization_name: string;
+    total_cases: number;
+    approved_cases: number;
+    rejected_cases: number;
+    in_progress_cases: number;
+}
+
