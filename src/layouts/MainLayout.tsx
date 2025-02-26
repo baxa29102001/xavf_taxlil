@@ -37,7 +37,7 @@ const routesOption = [
   {
     key: "prevention",
     icon: <AlertOutlined />,
-    label: <span className="text-base font-medium">Profilatika</span>,
+    label: <span className="text-base font-medium">Profilaktika</span>,
   },
   {
     key: "examination",

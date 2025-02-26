@@ -1,6 +1,8 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
+import { ROLES } from "@/constants/enum";
+import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { getQuarter } from "@/utils/quater";
 import {
   Button,
@@ -91,6 +93,8 @@ const ExaminationPage = () => {
   const [inspectors, setInspectors] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
+
+  const { config } = useDetectRoles();
 
   const [newPreventionModal, setNewPreventionModal] = useState(false);
 
@@ -193,15 +197,16 @@ const ExaminationPage = () => {
         <h2 className="text-[#262626] text-2xl font-semibold Monserrat ">
           Tekshirish
         </h2>
-
-        <button
-          className="bg-[#4E75FF] rounded-sm py-2 px-6 text-white cursor-pointer"
-          onClick={() => {
-            setNewPreventionModal(true);
-          }}
-        >
-          + Ma’lumot kiritish
-        </button>
+        {config.role === ROLES.IJROCHI && (
+          <button
+            className="bg-[#4E75FF] rounded-sm py-2 px-6 text-white cursor-pointer"
+            onClick={() => {
+              setNewPreventionModal(true);
+            }}
+          >
+            + Ma’lumot kiritish
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl p-3">

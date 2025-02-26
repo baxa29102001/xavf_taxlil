@@ -18,22 +18,22 @@ const btns = [
     count: "",
   },
   {
-    value: "new",
+    value: "Yangi",
     label: "Yangi",
     count: "",
   },
   {
-    value: "live",
+    value: "Jarayonda",
     label: "Jarayonda",
     count: "",
   },
   {
-    value: "completed",
+    value: "Tasdiqlandi",
     label: "Tasdiqlangan",
     count: "",
   },
   {
-    value: "canceled",
+    value: "Rad etildi",
     label: "Rad etilgan",
     count: "",
   },
@@ -105,49 +105,75 @@ const statusOptions: any = {
 
 const PerformerDocuments = () => {
   const [activeBtn, setActiveBtn] = useState("");
+  const [activeCategory, setActiveCategory] = useState("");
 
   const [documentsData, setDocumentsData] = useState([]);
   const { config } = useDetectRoles();
-
+  const [categories, setCategories] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
 
-  useQuery(["Scores"], () => axiosT.get("/scores/cases/all/"), {
+  useQuery(["categories"], () => axiosT.get("/organizations/categories/"), {
     onSuccess({ data }) {
-      const arr = data.results.map((item: any, index: number) => ({
-        ...item,
-        index: index + 1,
-        status: (
-          <span
-            style={{
-              color: statusOptions[item.status].color,
-              backgroundColor: statusOptions[item.status].bgColor,
-            }}
-            className="px-2 py-1 rounded-lg"
-          >
-            {item.status}
-          </span>
-        ),
-
-        edit: (
-          <button
-            className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
-            onClick={() => {
-              const params = new URLSearchParams({
-                title: item.organization_name,
-              }).toString();
-              navigate(
-                `/${config.mainUrl}/documents/` + item.id + `/?${params}`
-              );
-            }}
-          >
-            Batafsil
-          </button>
-        ),
-      }));
-
-      setDocumentsData(arr);
+      setCategories(data);
     },
   });
+
+  useQuery(
+    ["Scores", activeBtn, activeCategory, searchText],
+    () =>
+      axiosT.get("/scores/cases/all/", {
+        params: {
+          status: activeBtn,
+          category: activeCategory,
+          organization_name: searchText,
+        },
+      }),
+    {
+      onSuccess({ data }) {
+        const arr = data.results.map((item: any, index: number) => ({
+          ...item,
+          index: index + 1,
+          status: (
+            <span
+              style={{
+                color: statusOptions[item.status].color,
+                backgroundColor: statusOptions[item.status].bgColor,
+                whiteSpace: "nowrap",
+              }}
+              className="px-2 py-1 rounded-lg"
+            >
+              {item.status}
+            </span>
+          ),
+
+          edit: (
+            <button
+              className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
+              onClick={() => {
+                const params = new URLSearchParams({
+                  title: item.organization_name,
+                }).toString();
+                navigate(
+                  `/${config.mainUrl}/documents/` + item.id + `/?${params}`
+                );
+              }}
+            >
+              Batafsil
+            </button>
+          ),
+        }));
+
+        setDocumentsData(arr);
+      },
+    }
+  );
+
+  const onSearchChange = (
+    text: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setSearchText(text.target.value);
+  };
 
   return (
     <div className="px-4 py-5">
@@ -182,7 +208,7 @@ const PerformerDocuments = () => {
       <div className="flex items-center gap-2 mb-8">
         <Search
           placeholder="Tashkilot nomi"
-          onSearch={() => {}}
+          onChange={(value) => onSearchChange(value)}
           className="flex-1"
         />
         <RangePicker className="flex-1" placeholder={["dan", "gacha"]} />
@@ -195,18 +221,16 @@ const PerformerDocuments = () => {
         />{" "}
         <Select
           allowClear
-          onChange={() => {}}
+          onChange={(data: any) => {
+            setActiveCategory(data);
+          }}
           placeholder="Kategoriyasi"
           className="flex-1"
-          options={[{ value: "jack", label: "Jack" }]}
+          options={categories.map((item: any) => ({
+            value: item.id,
+            label: item.name,
+          }))}
         />{" "}
-        <Select
-          allowClear
-          onChange={() => {}}
-          placeholder="Statusi"
-          className="flex-1"
-          options={[{ value: "jack", label: "Jack" }]}
-        />
       </div>
       <div className="bg-white rounded-2xl p-3">
         <Table columns={columns} dataSource={documentsData} />
