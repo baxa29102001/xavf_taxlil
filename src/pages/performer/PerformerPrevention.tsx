@@ -101,16 +101,16 @@ const PerformerPrevention = () => {
           ...item,
           index: index + 1,
 
-          edit: (
-            <button
-              className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
-              onClick={() => {
-                navigate("/prevention/" + item.id);
-              }}
-            >
-              Batafsil
-            </button>
-          ),
+          // edit: (
+          //   <button
+          //     className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
+          //     onClick={() => {
+          //       navigate("/prevention/" + item.id);
+          //     }}
+          //   >
+          //     Batafsil
+          //   </button>
+          // ),
 
           file: (
             <a

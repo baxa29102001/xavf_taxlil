@@ -34,11 +34,11 @@ const columns = [
     dataIndex: "organization_inn",
     key: "organization_inn",
   },
-  {
-    title: "Oxirgi marta profilatika sanasi",
-    dataIndex: "last_profilaktika_date",
-    key: "last_profilaktika_date",
-  },
+  // {
+  //   title: "Oxirgi marta profilatika sanasi",
+  //   dataIndex: "last_profilaktika_date",
+  //   key: "last_profilaktika_date",
+  // },
   {
     title: "Muddat",
     dataIndex: "date",
@@ -106,17 +106,17 @@ const ExaminationPage = () => {
         const arr = data.map((item: any, index: number) => ({
           ...item,
           index: index + 1,
-
-          edit: (
-            <button
-              className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
-              onClick={() => {
-                navigate("/examination/" + item.id);
-              }}
-            >
-              Batafsil
-            </button>
-          ),
+          inspector: item?.inspector?.full_name,
+          // edit: (
+          //   <button
+          //     className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
+          //     onClick={() => {
+          //       navigate("/examination/" + item.id);
+          //     }}
+          //   >
+          //     Batafsil
+          //   </button>
+          // ),
 
           file: (
             <a
@@ -175,7 +175,7 @@ const ExaminationPage = () => {
       formData.append("file", item.originFileObj);
     });
     axiosT
-      .post("/organizations/create/", formData)
+      .post("/examination/create/", formData)
       .then(() => {
         messageApi.open({
           type: "success",

@@ -1,6 +1,7 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
+import { FileCreateModal } from "@/components/common/FileCreateModal";
 import { ROLES } from "@/constants/enum";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { DeleteOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
@@ -78,8 +79,7 @@ const PerformerDocumentDetail = () => {
   const navigate = useNavigate();
 
   const [messageApi, contextHolder] = message.useMessage();
-  const [fileData, setFileData] = useState([]);
-  const [form] = Form.useForm();
+
   const [fileAddModal, setFileAddModal] = useState<any>({
     modal: false,
     item: {},
@@ -98,55 +98,6 @@ const PerformerDocumentDetail = () => {
     item: {},
   });
 
-  const [files, setFiles] = useState([{ id: 1 }]);
-
-  const addFile = () => {
-    setFiles([...files, { id: Date.now() }]);
-  };
-
-  const removeFile = (id: number) => {
-    setFiles(files.filter((file) => file.id !== id));
-  };
-
-  const onFinishFileAdd = (values: any) => {
-    const formData = new FormData();
-
-    const arr = values.files.map((value: any) => {
-      delete value.uploaded_files[0].originFileObj.uid;
-      const data = value.uploaded_files[0].originFileObj;
-      return {
-        ...value,
-        deadlines: value.deadlines.format("YYYY-MM-DD"),
-        uploaded_files: data,
-      };
-    });
-
-    arr.forEach((item: any) => {
-      Object.keys(item).forEach((key: any) => {
-        formData.append(key, item[key]);
-      });
-    });
-
-    formData.append("organization", JSON.stringify(Number(id)));
-    formData.append("criteria", JSON.stringify(contentData?.id));
-
-    axiosT
-      .patch(`/scores/cases/${contentData?.id}/resend/`, formData)
-      .then((res) => {
-        console.log("res", res);
-
-        messageApi.open({
-          type: "success",
-          content: "Muaffaqiyatli yaratildi",
-        });
-        setFileAddModal({
-          modal: false,
-          item: {},
-        });
-        form.resetFields();
-      });
-  };
-
   const { refetch } = useQuery(
     ["documentDetailId"],
     () => axiosT.get("/scores/cases/all/" + id, {}),
@@ -162,6 +113,7 @@ const PerformerDocumentDetail = () => {
               style={{
                 color: statusOptions[data.status].color,
                 backgroundColor: statusOptions[data.status].bgColor,
+                whiteSpace: "nowrap",
               }}
               className="px-2 py-1 rounded-lg"
             >
@@ -268,7 +220,7 @@ const PerformerDocumentDetail = () => {
             >
               Boshlash
             </button>
-          ) : (
+          ) : contentData?.statusOption === "Jarayonda" ? (
             <>
               <button
                 className="bg-[#4E75FF] text-white px-3 py-2 rounded-md cursor-pointer"
@@ -287,7 +239,7 @@ const PerformerDocumentDetail = () => {
                 Rad etish
               </button>
             </>
-          )}
+          ) : null}
         </div>
       )}
       {config.role === ROLES.IJROCHI &&
@@ -344,10 +296,7 @@ const PerformerDocumentDetail = () => {
         open={cancelCommentModal}
         footer={null}
         onCancel={() => {
-          setIsModalOpen({
-            modal: false,
-            item: {},
-          });
+          setCancelCommentModal(false);
         }}
       >
         <Form layout="vertical" onFinish={onFinish}>
@@ -366,7 +315,17 @@ const PerformerDocumentDetail = () => {
           </Form.Item>
         </Form>
       </Modal>
-      <Modal
+      <FileCreateModal
+        criteria={fileAddModal?.item}
+        modalOpen={fileAddModal.modal}
+        setModalOpen={() => {
+          setFileAddModal({
+            modal: false,
+            item: {},
+          });
+        }}
+      />
+      {/* <Modal
         title={"Fayl biriktirish"}
         open={fileAddModal.modal}
         footer={null}
@@ -447,7 +406,6 @@ const PerformerDocumentDetail = () => {
                       />
                     </Form.Item>
 
-                    {/* Faylni o‘chirish tugmasi */}
                     {files.length > 1 && (
                       <Button
                         danger
@@ -478,7 +436,7 @@ const PerformerDocumentDetail = () => {
             </Form.Item>
           </Form>
         </>
-      </Modal>
+      </Modal> */}
     </div>
   );
 };

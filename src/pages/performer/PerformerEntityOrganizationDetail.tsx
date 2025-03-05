@@ -1,7 +1,8 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
+import { CustomUpload } from "@/components/common/CustomUpload";
 import { LeftOutlined } from "@ant-design/icons";
-import { Collapse, Modal, Table } from "antd";
+import { Button, Collapse, Form, Modal, Table, message } from "antd";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,6 +33,11 @@ const columns = [
     dataIndex: "file",
     key: "file",
   },
+  {
+    title: "",
+    dataIndex: "edit",
+    key: "edit",
+  },
 ];
 
 const PerformerEntityOrganizationDetail = () => {
@@ -42,9 +48,15 @@ const PerformerEntityOrganizationDetail = () => {
     criteria_details: [],
   });
 
+  const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
   const [fileData, setFileData] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState<any>({
+    modal: false,
+    item: {},
+  });
+  const [isClearCrieteraModal, setIsClearCrieteraModal] = useState<any>({
     modal: false,
     item: {},
   });
@@ -73,6 +85,23 @@ const PerformerEntityOrganizationDetail = () => {
                   Fayl
                 </button>
               ),
+
+              edit: (
+                <button
+                  className="bg-[#DCE4FF] py-2 px-3 cursor-pointer"
+                  style={{
+                    whiteSpace: "nowrap",
+                  }}
+                  onClick={() => {
+                    setIsClearCrieteraModal({
+                      modal: true,
+                      item,
+                    });
+                  }}
+                >
+                  Bartaraf etish
+                </button>
+              ),
             })),
           ],
         });
@@ -90,8 +119,50 @@ const PerformerEntityOrganizationDetail = () => {
     });
   };
 
+  const onFinishHandler = (data: any) => {
+    const file = data.file[0].originFileObj;
+    delete file.uid;
+    const formData = new FormData();
+
+    formData.append("organization", JSON.stringify(Number(id)));
+    formData.append(
+      "criteria",
+      JSON.stringify(Number(isClearCrieteraModal.item.id))
+    );
+    formData.append("file", file);
+
+    axiosT
+      .post("/scores/removed-scores/create/", formData)
+      .then((res: any) => {
+        console.log("res", res);
+
+        messageApi.open({
+          type: "success",
+          content: "Muaffaqiyatli yaratildi",
+        });
+
+        setIsClearCrieteraModal({
+          modal: false,
+          item: {},
+        });
+        form.resetFields();
+      })
+      .catch((err) => {
+        setIsClearCrieteraModal({
+          modal: false,
+          item: {},
+        });
+
+        messageApi.open({
+          type: "error",
+          content: "Ma'lumot yaratishda xatolik",
+        });
+      });
+  };
+
   return (
     <div className="px-4 py-5">
+      {contextHolder}
       <div className="flex items-center gap-2 mb-4.5">
         <button
           onClick={() => {
@@ -109,7 +180,6 @@ const PerformerEntityOrganizationDetail = () => {
           {content.organization_name}
         </h2>
       </div>
-
       <Collapse
         accordion
         defaultActiveKey={["1"]}
@@ -133,7 +203,6 @@ const PerformerEntityOrganizationDetail = () => {
           },
         ]}
       />
-
       <Modal
         title={isModalOpen.item.name}
         open={isModalOpen.modal}
@@ -146,11 +215,11 @@ const PerformerEntityOrganizationDetail = () => {
           });
         }}
       >
-        <div className="mt-6">
+        <div className="mt-6 ">
           {fileData.map((item: any, index: number) => {
             const file = item.files[0];
             return (
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <p>
                   {index + 1}. {file?.description}, {file?.deadline}
                   {","}
@@ -166,6 +235,32 @@ const PerformerEntityOrganizationDetail = () => {
               </div>
             );
           })}
+        </div>
+      </Modal>{" "}
+      <Modal
+        title={isClearCrieteraModal.item.name}
+        open={isClearCrieteraModal.modal}
+        onOk={() => {}}
+        footer={null}
+        onCancel={() => {
+          setIsClearCrieteraModal({
+            modal: false,
+            item: {},
+          });
+        }}
+      >
+        <div className="mt-6">
+          <Form form={form} onFinish={onFinishHandler}>
+            <Form.Item label="Faylni yuklash" name={"file"}>
+              <CustomUpload />
+            </Form.Item>
+
+            <Form.Item style={{ marginTop: 20 }}>
+              <Button type="primary" htmlType="submit">
+                Yuborish
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
       </Modal>
     </div>

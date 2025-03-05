@@ -1,4 +1,5 @@
 import { logout } from "@/api/auth";
+import axiosT from "@/api/axios";
 import { ROLES } from "@/constants/enum";
 import AuthContext from "@/context/authContext";
 import {
@@ -13,10 +14,11 @@ import {
 } from "@ant-design/icons";
 import { Button, Dropdown, Layout, Menu, Space, theme } from "antd";
 import { useContext, useState } from "react";
+import { useQuery } from "react-query";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 const { Header, Sider, Content } = Layout;
 
-const routesOption = [
+const routesOption = (notificationCount: number) => [
   {
     key: "",
     icon: <BarChartOutlined />,
@@ -32,7 +34,17 @@ const routesOption = [
   {
     key: "documents",
     icon: <UploadOutlined />,
-    label: <span className="text-base font-medium">Hujjatlar</span>,
+
+    label: (
+      <div className="flex items-center justify-between">
+        <span className="text-base font-medium">Hujjatlar </span>
+        {notificationCount !== 0 && (
+          <span className="bg-red-600 rounded-full text-center text-white w-5 h-5 text-[10px] flex items-center justify-center">
+            {notificationCount}
+          </span>
+        )}
+      </div>
+    ),
   },
   {
     key: "prevention",
@@ -51,12 +63,12 @@ const routesOption = [
   },
 ];
 
-const getRoutesForRole = (role: ROLES) => {
+const getRoutesForRole = (role: ROLES, notificationCount: number) => {
   switch (role) {
     case ROLES.IJROCHI:
-      return routesOption;
+      return routesOption(0);
     case ROLES.MASUL:
-      return routesOption;
+      return routesOption(notificationCount);
     case ROLES.RAHBAR:
       return [
         {
@@ -97,6 +109,8 @@ export const MainLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
+  const [notifactionCount, setNotifcationCount] = useState(0);
+
   const { setUserHandler, userDetails } = useContext(AuthContext);
 
   const [activeRoute, setActiveRoute] = useState("");
@@ -112,6 +126,16 @@ export const MainLayout = () => {
       })
       .catch(() => {});
   };
+
+  useQuery(
+    ["mainLayoutCaseStatusDistribution", activeRoute],
+    () => axiosT.get("/dashboard/case-status-distribution/"),
+    {
+      onSuccess({ data }) {
+        setNotifcationCount(data["Yangi"]);
+      },
+    }
+  );
   return (
     <Layout>
       <Sider
@@ -137,7 +161,7 @@ export const MainLayout = () => {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={[activeRoute]}
-          items={getRoutesForRole(userDetails.role)}
+          items={getRoutesForRole(userDetails.role, notifactionCount)}
           onClick={(item: any) => {
             setActiveRoute(item.key);
             navigate(item.key);

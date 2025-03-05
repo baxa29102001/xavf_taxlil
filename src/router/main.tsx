@@ -59,18 +59,18 @@ const StatusByOrganizations = React.lazy(
 );
 
 const StatusAllOrganizations = React.lazy(
-    () => import("@/pages/Hisobot/StatusAllOrganizations")
+  () => import("@/pages/Hisobot/StatusAllOrganizations")
 );
 const SubmittedCaseByCategory = React.lazy(
-    () => import("@/pages/Hisobot/SubmittedCaseByCategory")
+  () => import("@/pages/Hisobot/SubmittedCaseByCategory")
 );
 const SubmittedCaseByUserOrganization = React.lazy(
-    () => import("@/pages/Hisobot/SubmittedCaseByUserOrganization")
+  () => import("@/pages/Hisobot/SubmittedCaseByUserOrganization")
 );
 
 export const useConfigRoutes = () => {
   const context: any = useContext(AuthContext);
-
+  console.log("context", context);
   return useRoutes(
     context?.userDetails !== null
       ? getSuitableRoutes(context?.userDetails?.role)
@@ -164,15 +164,15 @@ const Routes = [
   },
   {
     path: "hisobot/case-status-all-organizations",
-    element: <StatusAllOrganizations/>,
+    element: <StatusAllOrganizations />,
   },
   {
     path: "hisobot/submitted-cases-by-category",
-    element: <SubmittedCaseByCategory/>,
+    element: <SubmittedCaseByCategory />,
   },
   {
     path: "hisobot/submitted-cases-by-user-organization",
-    element: <SubmittedCaseByUserOrganization/>,
+    element: <SubmittedCaseByUserOrganization />,
   },
 ];
 

@@ -1,10 +1,7 @@
 import axiosT from "@/api/axios";
-import { FileAddIcon, FileIcon } from "@/assets/icons";
-import { DeleteOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
-  Collapse,
   DatePicker,
   Form,
   Input,
@@ -12,67 +9,29 @@ import {
   Modal,
   Select,
   Space,
-  Table,
   message,
 } from "antd";
-import { useState } from "react";
-import { useQuery } from "react-query";
-import { useNavigate, useParams } from "react-router-dom";
-import { CustomUpload } from "../common/CustomUpload";
-import { FileCreateModal } from "../common/FileCreateModal";
+import { FC, useState } from "react";
+import { useParams } from "react-router-dom";
+import { CustomUpload } from "./CustomUpload";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
-const columns = [
-  {
-    title: "№",
-    dataIndex: "index",
-    key: "index",
-  },
-  {
-    title: "Baholash ko‘rsatkichlari",
-    dataIndex: "name",
-    key: "name",
-  },
-  {
-    title: "Ball",
-    dataIndex: "score",
-    key: "score",
-  },
-  {
-    title: "Miqdori",
-    dataIndex: "case_count",
-    key: "case_count",
-  },
-  {
-    title: "Fayl",
-    dataIndex: "file",
-    key: "file",
-  },
-  {
-    title: "Fayl biriktirish",
-    dataIndex: "file_add",
-    key: "file_add",
-  },
-];
 
-export const OrganizationDetail = () => {
-  const { id, organizationId } = useParams();
+interface FileCreateModalProps {
+  modalOpen: boolean;
+  setModalOpen: () => void;
+  criteria: any;
+}
+export const FileCreateModal: FC<FileCreateModalProps> = ({
+  modalOpen,
+  setModalOpen,
+  criteria,
+}) => {
   const [form] = Form.useForm();
-  const [content, setContent] = useState<any>({
-    overall_score: 0,
-    organization_name: "",
-    criteria_details: [],
-  });
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [isModalOpen, setIsModalOpen] = useState<any>({
-    modal: false,
-    item: {},
-  });
-  const [fileAddModal, setFileAddModal] = useState<any>({
-    modal: false,
-    item: {},
-  });
+  const { id, organizationId } = useParams();
 
   const [files, setFiles] = useState([{ id: 1 }]);
 
@@ -87,8 +46,6 @@ export const OrganizationDetail = () => {
   const onFinish = (values: any) => {
     const formData = new FormData();
 
-    formData.append("description", values.description);
-
     const arr = values.files.map((value: any) => {
       delete value.uploaded_files[0].originFileObj.uid;
       const data = value.uploaded_files[0].originFileObj;
@@ -101,161 +58,43 @@ export const OrganizationDetail = () => {
 
     arr.forEach((item: any) => {
       Object.keys(item).forEach((key: any) => {
-        formData.append(key, item[key]);
+        if (item[key]) formData.append(key, item[key] ? item[key] : "");
       });
     });
 
     formData.append("organization", JSON.stringify(Number(id)));
-    formData.append("criteria", JSON.stringify(fileAddModal?.item?.id));
+    formData.append("criteria", JSON.stringify(criteria?.id));
 
-    axiosT.post("/scores/score-create/", formData).then((res) => {
-      console.log("res", res);
-
-      messageApi.open({
-        type: "success",
-        content: "Muaffaqiyatli yaratildi",
-      });
-      setFileAddModal({
-        modal: false,
-        item: {},
-      });
-      form.resetFields();
-    });
-  };
-
-  const navigate = useNavigate();
-  useQuery(
-    ["detailId"],
-    () => axiosT.get("/criterias/" + organizationId + "/" + id + "/list", {}),
-    {
-      onSuccess({ data }) {
-        setContent({
-          overall_score: data.overall_score,
-          organization_name: data.organization_name,
-          criteria_details: [
-            ...data.criteria_details.map((item: any, index: any) => ({
-              ...item,
-              index: index + 1,
-              file: (
-                <button
-                  className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer"
-                  onClick={() => {
-                    handleOpenModal(item);
-                  }}
-                >
-                  <FileIcon />
-                  Fayl
-                </button>
-              ),
-
-              file_add: (
-                <button
-                  className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer"
-                  onClick={() => {
-                    handleAddFile(item);
-                  }}
-                >
-                  <FileAddIcon />
-                  Fayl biriktirish
-                </button>
-              ),
-            })),
-          ],
-        });
-      },
-    }
-  );
-
-  const handleOpenModal = (item: any) => {
     axiosT
-      .get("/scores/" + organizationId + "/" + id + "/cases/")
-      .then((res: any) => {
-        setIsModalOpen({
-          modal: true,
-          item,
+      .post("/scores/score-create/", formData)
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "Muaffaqiyatli yaratildi",
+        });
+        setModalOpen();
+        form.resetFields();
+      })
+      .catch((err) => {
+        messageApi.open({
+          type: "error",
+          content: "Ma'lumot yaratishda xatolik",
         });
       });
   };
-
-  const handleAddFile = (item: any) => {
-    setFileAddModal({
-      modal: true,
-      item,
-    });
-  };
-
   return (
-    <div className="px-4 py-5">
+    <>
       {contextHolder}
-      <div className="flex items-center gap-2 mb-4.5">
-        <button
-          onClick={() => {
-            navigate(-1);
-          }}
-          className="cursor-pointer"
-        >
-          <LeftOutlined
-            style={{
-              fontSize: "20px",
-            }}
-          />
-        </button>
-        <h2 className="text-[#262626] text-2xl font-semibold Monserrat ">
-          {content.organization_name}
-        </h2>
-      </div>
-      <Collapse
-        accordion
-        defaultActiveKey={["1"]}
-        items={[
-          {
-            key: "1",
-            label: "Olingan ballar tasnifi",
-            children: (
-              <>
-                <Table
-                  columns={columns}
-                  dataSource={content.criteria_details}
-                />
-              </>
-            ),
-          },
-        ]}
-      />
-      <Modal
-        title={isModalOpen.item.name}
-        open={isModalOpen.modal}
-        onOk={() => {}}
-        onCancel={() => {
-          setIsModalOpen({
-            modal: false,
-            item: {},
-          });
-        }}
-      ></Modal>
 
-      <FileCreateModal
-        criteria={fileAddModal?.item}
-        modalOpen={fileAddModal.modal}
-        setModalOpen={() => {
-          setFileAddModal({
-            modal: false,
-            item: {},
-          });
-        }}
-      />
-      {/* <Modal
+      <Modal
         title={"Fayl biriktirish"}
-        open={fileAddModal.modal}
+        open={modalOpen}
         footer={null}
         okText="Yuborish"
         cancelText="Bekor qilish"
         width={"90%"}
         onCancel={() => {
-          setFileAddModal({
-            modal: false,
-            item: {},
-          });
+          setModalOpen();
         }}
       >
         <>
@@ -268,7 +107,7 @@ export const OrganizationDetail = () => {
                       label="Fayl"
                       name={["files", index, "uploaded_files"]}
                       rules={[
-                        { required: true, message: "Bandlar sonini kiriting!" },
+                        { required: true, message: "Fayl kiritish majburiy" },
                       ]}
                     >
                       <CustomUpload multiple={false} />
@@ -336,6 +175,7 @@ export const OrganizationDetail = () => {
                       }}
                     </Form.Item>
 
+                    {/* Faylni o‘chirish tugmasi */}
                     {files.length > 1 && (
                       <Button
                         danger
@@ -366,7 +206,7 @@ export const OrganizationDetail = () => {
             </Form.Item>
           </Form>
         </>
-      </Modal> */}
-    </div>
+      </Modal>
+    </>
   );
 };

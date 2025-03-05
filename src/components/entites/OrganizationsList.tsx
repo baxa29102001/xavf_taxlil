@@ -42,6 +42,11 @@ const columns = [
     key: "ball",
   },
   {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+  },
+  {
     title: "",
     dataIndex: "edit",
     key: "edit",
@@ -49,9 +54,18 @@ const columns = [
 ];
 
 const levelOfRisk: any = {
-  "Low Risk": "#CEFFD2",
-  "High Risk": "#FFD9D9",
-  "Moderate Risk": "#FBFFBC",
+  "Low Risk": {
+    color: "#CEFFD2",
+    title: "Xavfi past",
+  },
+  "High Risk": {
+    color: "#FFD9D9",
+    title: "Xavfi yuqori",
+  },
+  "Moderate Risk": {
+    color: "#FBFFBC",
+    title: "Xavfi o'rtacha",
+  },
 };
 
 interface OrganizationsListProps {
@@ -67,7 +81,6 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
 
   const { config } = useDetectRoles();
 
-  console.log(config);
   useQuery(
     ["organizationList", id],
     () =>
@@ -86,7 +99,19 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
           district: item.district || "-",
           adress: item.address || "-",
           ball: item.sum_score,
-          color: "bg-" + `[${levelOfRisk[item.risk_level]}]`,
+          status: (
+            <span
+              style={{
+                color: '#000',
+                backgroundColor: levelOfRisk[item.risk_level]?.color,
+                whiteSpace: "nowrap",
+              }}
+              className="px-2 py-1 rounded-lg"
+            >
+              {levelOfRisk[item.risk_level]?.title}
+            </span>
+          ),
+
           edit: (
             <button
               className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"

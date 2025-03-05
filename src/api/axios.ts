@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const mode = import.meta.env.MODE;
-
 const axiosT = axios.create({
   baseURL: "https://rkjp.technocorp.uz/api",
   withCredentials: true,
@@ -15,7 +13,9 @@ axiosT.interceptors.response.use(
   (config) => {
     return config;
   },
-  async () => {}
+  async (error) => {
+    return Promise.reject(error.response.data);
+  }
 );
 
 export default axiosT;

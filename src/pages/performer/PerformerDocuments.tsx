@@ -20,22 +20,26 @@ const btns = [
   {
     value: "Yangi",
     label: "Yangi",
-    count: "",
+    count: "0",
+    id: "Yangi",
   },
   {
     value: "Jarayonda",
     label: "Jarayonda",
-    count: "",
+    count: "0",
+    id: "Jarayonda",
   },
   {
     value: "Tasdiqlandi",
     label: "Tasdiqlangan",
-    count: "",
+    count: "0",
+    id: "Tasdiqlandi",
   },
   {
     value: "Rad etildi",
     label: "Rad etilgan",
-    count: "",
+    count: "0",
+    id: "Rad etildi",
   },
 ];
 
@@ -111,6 +115,7 @@ const PerformerDocuments = () => {
   const { config } = useDetectRoles();
   const [categories, setCategories] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [BTNS, setBTNs] = useState(btns);
   const navigate = useNavigate();
 
   useQuery(["categories"], () => axiosT.get("/organizations/categories/"), {
@@ -118,6 +123,21 @@ const PerformerDocuments = () => {
       setCategories(data);
     },
   });
+  useQuery(
+    ["casedistribution"],
+    () => axiosT.get("/dashboard/case-status-distribution/"),
+    {
+      onSuccess({ data }) {
+        const arr = BTNS.map((item: any) => {
+          return {
+            ...item,
+            count: data[item.id],
+          };
+        });
+        setBTNs(arr);
+      },
+    }
+  );
 
   useQuery(
     ["Scores", activeBtn, activeCategory, searchText],
@@ -125,7 +145,7 @@ const PerformerDocuments = () => {
       axiosT.get("/scores/cases/all/", {
         params: {
           status: activeBtn,
-          category: activeCategory,
+          category_id: activeCategory,
           organization_name: searchText,
         },
       }),
@@ -193,14 +213,19 @@ const PerformerDocuments = () => {
         )}
       </div>
       <div className="flex items-center gap-2 bg-white w-max p-1 mb-6">
-        {btns.map((btn: any) => (
+        {BTNS.map((btn: any) => (
           <button
-            className={`py-1.5 px-4 rounded-sm  cursor-pointer ${
+            className={`py-1.5 px-4 rounded-sm  cursor-pointer gap-3 flex items-center justify-between ${
               activeBtn === btn.value ? "bg-[#1C5196] text-white" : ""
             }`}
             onClick={() => setActiveBtn(btn.value)}
           >
             {btn.label}
+            {![undefined, 0].includes(btn.count) && (
+              <span className="bg-red-600 rounded-full text-center text-white w-5 h-5 text-[10px] flex items-center justify-center">
+                {btn.count}
+              </span>
+            )}
           </button>
         ))}
       </div>
