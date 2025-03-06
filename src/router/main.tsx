@@ -67,10 +67,13 @@ const SubmittedCaseByCategory = React.lazy(
 const SubmittedCaseByUserOrganization = React.lazy(
   () => import("@/pages/Hisobot/SubmittedCaseByUserOrganization")
 );
+const EntityCriteriaDetailPage = React.lazy(
+  () => import("@/pages/performer/EntityCriteriaDetail")
+);
 
 export const useConfigRoutes = () => {
   const context: any = useContext(AuthContext);
-  console.log("context", context);
+
   return useRoutes(
     context?.userDetails !== null
       ? getSuitableRoutes(context?.userDetails?.role)
@@ -173,6 +176,10 @@ const Routes = [
   {
     path: "hisobot/submitted-cases-by-user-organization",
     element: <SubmittedCaseByUserOrganization />,
+  },
+  {
+    path: "criteria/:id",
+    element: <EntityCriteriaDetailPage />,
   },
 ];
 

@@ -117,6 +117,9 @@ const PerformerDocuments = () => {
   const [searchText, setSearchText] = useState("");
   const [BTNS, setBTNs] = useState(btns);
   const navigate = useNavigate();
+  const [totalCount, setTotalCount] = useState(0);
+
+  const [activePage, setActivePage] = useState(1);
 
   useQuery(["categories"], () => axiosT.get("/organizations/categories/"), {
     onSuccess({ data }) {
@@ -140,13 +143,14 @@ const PerformerDocuments = () => {
   );
 
   useQuery(
-    ["Scores", activeBtn, activeCategory, searchText],
+    ["Scores", activeBtn, activeCategory, searchText, activePage],
     () =>
       axiosT.get("/scores/cases/all/", {
         params: {
           status: activeBtn,
           category_id: activeCategory,
           organization_name: searchText,
+          page: activePage,
         },
       }),
     {
@@ -183,7 +187,7 @@ const PerformerDocuments = () => {
             </button>
           ),
         }));
-
+        setTotalCount(data.count);
         setDocumentsData(arr);
       },
     }
@@ -242,8 +246,8 @@ const PerformerDocuments = () => {
           onChange={() => {}}
           placeholder="Men tomondan kiritilgan"
           className="flex-1"
-          options={[{ value: "jack", label: "Jack" }]}
-        />{" "}
+          options={[]}
+        />
         <Select
           allowClear
           onChange={(data: any) => {
@@ -255,10 +259,20 @@ const PerformerDocuments = () => {
             value: item.id,
             label: item.name,
           }))}
-        />{" "}
+        />
       </div>
       <div className="bg-white rounded-2xl p-3">
-        <Table columns={columns} dataSource={documentsData} />
+        <Table
+          columns={columns}
+          dataSource={documentsData}
+          pagination={{
+            total: totalCount,
+            pageSize: 10,
+            onChange: (page: any) => {
+              setActivePage(page);
+            },
+          }}
+        />
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
-import { LeftOutlined } from "@ant-design/icons";
+import { useDetectRoles } from "@/hooks/useDetectRoles";
+import { EyeOutlined, LeftOutlined } from "@ant-design/icons";
 import { Button, Collapse, Form, Modal, Table, message } from "antd";
 import { useState } from "react";
 import { useQuery } from "react-query";
@@ -48,6 +49,12 @@ const PerformerEntityOrganizationDetail = () => {
     criteria_details: [],
   });
 
+
+  const {config} = useDetectRoles()
+
+
+
+
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [fileData, setFileData] = useState([]);
@@ -87,20 +94,31 @@ const PerformerEntityOrganizationDetail = () => {
               ),
 
               edit: (
-                <button
-                  className="bg-[#DCE4FF] py-2 px-3 cursor-pointer"
-                  style={{
-                    whiteSpace: "nowrap",
-                  }}
-                  onClick={() => {
-                    setIsClearCrieteraModal({
-                      modal: true,
-                      item,
-                    });
-                  }}
-                >
-                  Bartaraf etish
-                </button>
+                <div className="flex items-center justify-between gap-4">
+                  <button
+                    className="bg-[#DCE4FF] py-2 px-3 cursor-pointer"
+                    style={{
+                      whiteSpace: "nowrap",
+                    }}
+                    onClick={() => {
+                      setIsClearCrieteraModal({
+                        modal: true,
+                        item,
+                      });
+                    }}
+                  >
+                    Bartaraf etish
+                  </button>
+
+                  <button
+                    className="bg-blue-300 rounded-md py-2 px-3 cursor-pointer"
+                    onClick={() =>
+                      navigate(`/${config.mainUrl}/criteria/${item.id}?organizationId=${id}`)
+                    }
+                  >
+                    <EyeOutlined />
+                  </button>
+                </div>
               ),
             })),
           ],
