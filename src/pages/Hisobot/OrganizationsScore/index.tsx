@@ -99,7 +99,7 @@ const Index = () => {
       <div className={"grid grid-cols-12"}>
         <div className="col-span-6">
           <PageTitle
-            title={`Tadbirkorlik sub’eklar faoliyatida ${year}-yil davomida o‘tkazilgan xavf tahlili natijalari`}
+            title={`Xavf tahlili natijalari choraklar kesimida`}
             back
           />
         </div>

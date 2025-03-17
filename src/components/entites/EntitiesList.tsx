@@ -29,7 +29,9 @@ export const EntitesList: FC<EntitesListProps> = ({ navigateUrl }) => {
           <Link
             to={
               (navigateUrl ? navigateUrl : `/${config.mainUrl}/entity/`) +
-              category.id
+              category.id +
+              "?category_name=" +
+              category.name 
             }
             style={{
               display: "flex",

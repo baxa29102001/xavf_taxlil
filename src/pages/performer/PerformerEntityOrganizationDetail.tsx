@@ -3,7 +3,7 @@ import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { EyeOutlined, LeftOutlined } from "@ant-design/icons";
-import { Button, Collapse, Form, Modal, Table, message } from "antd";
+import { Button, Collapse, Form, Input, Modal, Table, message } from "antd";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -41,6 +41,8 @@ const columns = [
   },
 ];
 
+const { TextArea } = Input;
+
 const PerformerEntityOrganizationDetail = () => {
   const { id, organizationId } = useParams();
   const [content, setContent] = useState<any>({
@@ -49,11 +51,7 @@ const PerformerEntityOrganizationDetail = () => {
     criteria_details: [],
   });
 
-
-  const {config} = useDetectRoles()
-
-
-
+  const { config } = useDetectRoles();
 
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
@@ -95,7 +93,7 @@ const PerformerEntityOrganizationDetail = () => {
 
               edit: (
                 <div className="flex items-center justify-between gap-4">
-                  <button
+                  {/* <button
                     className="bg-[#DCE4FF] py-2 px-3 cursor-pointer"
                     style={{
                       whiteSpace: "nowrap",
@@ -108,12 +106,14 @@ const PerformerEntityOrganizationDetail = () => {
                     }}
                   >
                     Bartaraf etish
-                  </button>
+                  </button> */}
 
                   <button
                     className="bg-blue-300 rounded-md py-2 px-3 cursor-pointer"
                     onClick={() =>
-                      navigate(`/${config.mainUrl}/criteria/${item.id}?organizationId=${id}`)
+                      navigate(
+                        `/${config.mainUrl}/criteria/${item.id}?organizationId=${id}`
+                      )
                     }
                   >
                     <EyeOutlined />
@@ -148,6 +148,7 @@ const PerformerEntityOrganizationDetail = () => {
       JSON.stringify(Number(isClearCrieteraModal.item.id))
     );
     formData.append("file", file);
+    formData.append("comment", data.comment);
 
     axiosT
       .post("/scores/removed-scores/create/", formData)
@@ -165,7 +166,7 @@ const PerformerEntityOrganizationDetail = () => {
         });
         form.resetFields();
       })
-      .catch((err) => {
+      .catch(() => {
         setIsClearCrieteraModal({
           modal: false,
           item: {},
@@ -239,9 +240,7 @@ const PerformerEntityOrganizationDetail = () => {
             return (
               <div className="flex items-center justify-between mb-3">
                 <p>
-                  {index + 1}. {file?.description}, {file?.deadline}
-                  {","}
-                  {file?.clauses_number}
+                  {index + 1}. {isModalOpen?.item.date}
                 </p>
 
                 <a href={file?.file_url} target="_blank">
@@ -269,10 +268,21 @@ const PerformerEntityOrganizationDetail = () => {
       >
         <div className="mt-6">
           <Form form={form} onFinish={onFinishHandler}>
-            <Form.Item label="Faylni yuklash" name={"file"}>
+            <Form.Item
+              label="Faylni yuklash"
+              name={"file"}
+              rules={[
+                {
+                  required: true,
+                  message: "Faylni tanlang",
+                },
+              ]}
+            >
               <CustomUpload />
+            </Form.Item>{" "}
+            <Form.Item label="Izoh" name={"comment"}>
+              <TextArea />
             </Form.Item>
-
             <Form.Item style={{ marginTop: 20 }}>
               <Button type="primary" htmlType="submit">
                 Yuborish

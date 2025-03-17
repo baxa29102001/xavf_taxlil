@@ -3,7 +3,8 @@ import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { Table } from "antd";
 import { FC, useState } from "react";
 import { useQuery } from "react-query";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import PageTitle from "@/components/common/PageTitle";
 
 const columns = [
   {
@@ -76,6 +77,7 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
   navigateUrl,
 }) => {
   const [organizationList, setOrganizationList] = useState([]);
+  const [query] = useSearchParams();
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -102,7 +104,7 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
           status: (
             <span
               style={{
-                color: '#000',
+                color: "#000",
                 backgroundColor: levelOfRisk[item.risk_level]?.color,
                 whiteSpace: "nowrap",
               }}
@@ -134,9 +136,7 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
 
   return (
     <div className="px-4 py-5">
-      <h2 className="text-[#262626] text-2xl font-semibold Monserrat mb-4.5">
-        Telekommunikatsiya va maʼlumotlar uzatish tarmoqlari
-      </h2>
+      <PageTitle title={`${query.get("category_name")}`} back />
 
       <div className="bg-white rounded-2xl p-3">
         <Table

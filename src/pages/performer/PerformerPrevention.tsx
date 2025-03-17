@@ -14,7 +14,7 @@ import {
   Table,
   message,
 } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -87,10 +87,22 @@ const PerformerPrevention = () => {
   const [organizationsList, setOrganizationList] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
-
+  const [categoryId, setCategoryId] = useState();
+  const [loading, setLoading] = useState(false);
   const { config } = useDetectRoles();
 
   const [newPreventionModal, setNewPreventionModal] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useQuery(
+    ["categoriesEntites"],
+    () => axiosT.get("/organizations/categories/"),
+    {
+      onSuccess({ data }) {
+        setCategories(data);
+      },
+    }
+  );
 
   const { refetch } = useQuery(
     ["prevention"],
@@ -129,12 +141,11 @@ const PerformerPrevention = () => {
     }
   );
   useQuery(
-    ["preventionOrganization"],
+    ["preventionOrganization", categoryId],
     () =>
       axiosT.get("/prevention/organization-list/", {
         params: {
-          year: new Date().getFullYear(),
-          quarter: getQuarter(new Date().getMonth() + 1),
+          category_id: categoryId,
         },
       }),
     {
@@ -145,6 +156,7 @@ const PerformerPrevention = () => {
   );
 
   const onFinish = (dataPayload: any) => {
+    setLoading(true);
     const data = {
       ...dataPayload,
       date: dataPayload.date.format("YYYY-MM-DD"),
@@ -170,10 +182,21 @@ const PerformerPrevention = () => {
         setNewPreventionModal(false);
         form.resetFields();
       })
-      .catch((err) => {
-        console.log("err");
-      });
+      .catch(() => {
+        messageApi.open({
+          type: "error",
+          content: "Ma'lumot yaratishda xatolik",
+        });
+        form.resetFields();
+      })
+      .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    if (!categoryId) {
+      form.setFieldValue("organization", null);
+    }
+  }, [categoryId]);
 
   return (
     <div className="px-4 py-5">
@@ -204,6 +227,7 @@ const PerformerPrevention = () => {
         footer={null}
         onCancel={() => setNewPreventionModal(false)}
         onClose={() => setNewPreventionModal(false)}
+        width={"50%"}
       >
         <>
           <Form
@@ -214,6 +238,23 @@ const PerformerPrevention = () => {
           >
             <div className="grid grid-cols-2 gap-3">
               <Form.Item
+                label="Tadbirkorlik subyektlari"
+                className="col-span-2"
+                name={"category"}
+              >
+                <Select
+                  placeholder="Kategoriya tanlash"
+                  options={categories.map((category: any) => ({
+                    label: category.name,
+                    value: category.id,
+                  }))}
+                  onChange={(value: any) => {
+                    setCategoryId(value);
+                  }}
+                  allowClear
+                />
+              </Form.Item>
+              <Form.Item
                 label="Tashkilot nomi"
                 className="col-span-2"
                 rules={[{ required: true, message: "Majburiy maydon" }]}
@@ -221,6 +262,9 @@ const PerformerPrevention = () => {
               >
                 <Select
                   placeholder="Tashkilotni tanlash"
+                  disabled={!categoryId}
+                  allowClear
+                  notFoundContent="Xavf o'rta/yuqori tashkilotlar mavjud emas"
                   options={organizationsList.map((item: any) => ({
                     value: item.id,
                     label: item.name,
@@ -308,7 +352,7 @@ const PerformerPrevention = () => {
               </Form.Item>
             </div>
             <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={loading}>
                 Yuborish
               </Button>
             </Form.Item>

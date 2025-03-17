@@ -8,35 +8,59 @@ export const HISOBOT_LIST = {
   [ROLES.IJROCHI]: [
     {
       value: "organizations-scores",
-      label: `Tadbirkorlik subyeklar faoliyatida ${activeYear}-yil davomida o‘tkazilgan xavf tahlili natijalari`,
+      label: `Xavf tahlili natijalari choraklar kesimida`,
     },
     {
       value: "organizations-category-scores",
-      label: `Tadbirkorlik subyeklar faoliyatida ${activeYear}-yil ${activeQuarter}-chorak (year and quarter) davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida`,
+      label: `Xavf tahlili natijalari yo‘nalishlar kesimida`,
     },
     {
       value: "organization-scores-by-region",
-      label: `Axborotlashtirish, raqamli texnologiyalar, elektron xizmatlar va raqamli servislar, axborot xavfsizligi  faoliyatida ${activeYear}-yil ${activeQuarter}-chorak davomida o‘tkazilgan xavf tahlilining kriterilar bo‘yicha natijalari`,
+      label: `Xavf tahlili baholash ko‘rsatgichlarining hududlar kesimida`,
     },
     {
       value: "case-status-by-category",
-      label: `Tadbirkorlik subyekti faoliyatida aniqlangan va masʼullarga ${activeYear} yilning ${activeQuarter}-choragida yuborilgan umumiy holatlarning yo‘nalishlar kesimidagi tahlili`,
+      label: `Barcha tadbirkorlik subyektlari faoliyatida aniqlangan va masʼullarga yuborilgan holatlar yo‘nalishlar kesimida`,
     },
     {
       value: "case-status-by-organization",
-      label: `Faoliyatida aniqlangan va masʼullarga ${activeYear} yilning ${activeQuarter}-choragida yuborilgan umumiy holatlarning yo‘nalishlar kesimidagi tahlili`,
+      label: `Tanlangan tadbirkorlik subyekti faoliyatida aniqlangan va masʼullarga yuborilgan holatlar yo‘nalishlar kesimida `,
     },
     {
       value: "case-status-all-organizations",
-      label: `Tadbirkorlik subyekti faoliyatida aniqlangan va masʼullarga ${activeYear} yilning ${activeQuarter}-choragida yuborilgan holatlarning tadbirkorlik subyektlar kesimidagi tahlili`,
+      label: `Masʼullarga yuborilgan holatlar tadbirkorlik subyektlar kesimida`,
     },
     {
       value: "submitted-cases-by-category",
-      label: `Tadbirkorlik subyekti faoliyatida aniqlangan va ijrochilardan ${activeYear} yilning ${activeQuarter}-choragida barcha tadbirkorlik subyektlar bo‘yicha kelib tushgan holatlarning yo‘nalishlar kesimidagi tahlili"`,
+      label: `Ijrochilardan kelib tushgan holatlar yo‘nalishlar kesimida`,
+    },
+    // {
+    //   value: "submitted-cases-by-user-organization",
+    //   label: `Tadbirkorlik subyekti faoliyatida aniqlangan va ijrochilardan ${activeYear} yilning ${activeQuarter}-choragida barcha tadbirkorlik subyektlar bo‘yicha kelib tushgan holatlarning yo‘nalishlar kesimidagi tahlili`,
+    // },
+    {
+      value: "action-taken-by-category",
+      label: `Xavf tahlili natijalariga asosan ko‘rilgan choralar tadbirkorlik subyeklar kesimida`,
     },
     {
-      value: "submitted-cases-by-user-organization",
-      label: `Tadbirkorlik subyekti faoliyatida aniqlangan va ijrochilardan ${activeYear} yilning ${activeQuarter}-choragida barcha tadbirkorlik subyektlar bo‘yicha kelib tushgan holatlarning yo‘nalishlar kesimidagi tahlili`,
+      value: "action-taken-by-organization",
+      label: `Xavf tahlili natijalariga asosan ko‘rilgan choralar yo‘nalishlar kesimida`,
+    },
+    {
+      value: "action-taken-by-examination-by-organization",
+      label: `O‘tkazilgan tekshirishlarga asosan ko‘rilgan choralar tadbirkorlik subyektlar kesimida`,
+    },
+    {
+      value: "action-taken-by-examination-by-category",
+      label: `O‘tkazilgan tekshirishlarga asosan ko‘rilgan choralar yo‘nalishlar kesimida`,
+    },
+    {
+      value: "action-taken-by-profilatik-by-organization",
+      label: `O‘tkazilgan profilaktika tadbirlari tadbirkorlik subyektlar kesimida`,
+    },
+    {
+      value: "action-taken-by-profilatik-by-category",
+      label: `O‘tkazilgan profilaktika tadbirlari yo‘nalishlar kesimida`,
     },
   ],
   [ROLES.MASUL]: [
@@ -46,7 +70,7 @@ export const HISOBOT_LIST = {
     },
     {
       value: "organizations-category-scores",
-      label: `Tadbirkorlik subyeklar faoliyatida ${activeYear}-yil ${activeQuarter}-chorak (year and quarter) davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida`,
+      label: `Tadbirkorlik subyeklar faoliyatida ${activeYear}-yil ${activeQuarter}-chorak  davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida`,
     },
     {
       value: "organization-scores-by-region",
@@ -80,7 +104,7 @@ export const HISOBOT_LIST = {
     },
     {
       value: "organizations-category-scores",
-      label: `Tadbirkorlik subyeklar faoliyatida ${activeYear}-yil ${activeQuarter}-chorak (year and quarter) davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida`,
+      label: `Tadbirkorlik subyeklar faoliyatida ${activeYear}-yil ${activeQuarter}-chorak  davomida o‘tkazilgan xavf tahlili natijalari yo‘nalishlar kesimida`,
     },
     {
       value: "organization-scores-by-region",

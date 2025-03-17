@@ -132,93 +132,87 @@ const Index = () => {
 
 
     return (
-        <div>
-
-            <div className={'grid grid-cols-12'}>
-                <div className="col-span-6">
-                    <PageTitle
-                        title={'Tadbirkorlik subyekti faoliyatida aniqlangan va masʼullarga 2025 yilning -choragida yuborilgan holatlarning tadbirkorlik subyektlar kesimidagi tahlili'}
-                        back
-                    />
-                </div>
-                <div className="col-span-6 flex justify-end">
-                    <Space>
-                        <Button
-                            icon={<PrinterOutlined />}
-                            color="primary"
-                            variant="outlined"
-                            onClick={() => reactToPrintFn()}
-                        >
-                            Chop etish
-                        </Button>
-                        <Button
-                            icon={<PrinterOutlined />}
-                            color="primary"
-                            variant="outlined"
-                            target={'_blank'}
-                            href={`${axiosT.defaults.baseURL}/reports/case-status-all-organizations/?year=${year}&export=excel`}
-                        >
-                            Excel yuklab olish
-                        </Button>
-                    </Space>
-
-                </div>
-            </div>
-
-            <div className={'grid grid-cols-12 gap-4 mb-5'}>
-                <div className="col-span-6">
-                    <Search
-                        placeholder="Tashkilot nomi"
-                        onChange={(value) => onSearchChange(value)}
-                        className="max-w-[300px]"
-                    />
-                </div>
-                <div className="col-span-6 flex justify-end">
-                    <Space>
-
-                        <Select
-                            allowClear
-                            onChange={(ijrochi) => onIjrochiChange(ijrochi)}
-                            placeholder="Ijrochi"
-                            options={ijrochiSelect}
-                            loading={isLoadingIjrochi}
-                            className={'w-[250px]'}
-                        />
-                        <Select
-                            allowClear
-                            onChange={(organization) => onOrganizationChange(organization)}
-                            placeholder="Tashkilot"
-                            options={organizationsSelect}
-                            loading={isLoadingOrganizations}
-                            className={'w-[250px]'}
-                        />
-
-                        <Select
-                            allowClear
-                            onChange={(quarter) => setQuarter(quarter)}
-                            placeholder="Chorak"
-                            options={QuarterList}
-                            className={'w-[250px]'}
-                        />
-
-                        <DatePicker
-                            onChange={onYearChange}
-                            picker="year"
-                        />
-                    </Space>
-
-                </div>
-            </div>
-
-            <div ref={contentRef}>
-                <Table
-                    dataSource={dataSource}
-                    columns={columns}
-                    loading={isLoading}
-                />
-            </div>
-
+      <div>
+        <div className={"grid grid-cols-12"}>
+          <div className="col-span-6">
+            <PageTitle
+              title={
+                "Masʼullarga yuborilgan holatlar tadbirkorlik subyektlar kesimida"
+              }
+              back
+            />
+          </div>
+          <div className="col-span-6 flex justify-end">
+            <Space>
+              <Button
+                icon={<PrinterOutlined />}
+                color="primary"
+                variant="outlined"
+                onClick={() => reactToPrintFn()}
+              >
+                Chop etish
+              </Button>
+              <Button
+                icon={<PrinterOutlined />}
+                color="primary"
+                variant="outlined"
+                target={"_blank"}
+                href={`${axiosT.defaults.baseURL}/reports/case-status-all-organizations/?year=${year}&export=excel`}
+              >
+                Excel yuklab olish
+              </Button>
+            </Space>
+          </div>
         </div>
+
+        <div className={"grid grid-cols-12 gap-4 mb-5"}>
+          <div className="col-span-6">
+            <Search
+              placeholder="Tashkilot nomi"
+              onChange={(value) => onSearchChange(value)}
+              className="max-w-[300px]"
+            />
+          </div>
+          <div className="col-span-6 flex justify-end">
+            <Space>
+              <Select
+                allowClear
+                onChange={(ijrochi) => onIjrochiChange(ijrochi)}
+                placeholder="Ijrochi"
+                options={ijrochiSelect}
+                loading={isLoadingIjrochi}
+                className={"w-[250px]"}
+              />
+              <Select
+                allowClear
+                onChange={(organization) => onOrganizationChange(organization)}
+                placeholder="Tashkilot"
+                options={organizationsSelect}
+                loading={isLoadingOrganizations}
+                className={"w-[250px]"}
+              />
+
+              <Select
+                allowClear
+                onChange={(quarter) => setQuarter(quarter)}
+                placeholder="Chorak"
+                options={QuarterList}
+                className={"w-[250px]"}
+              />
+
+              <DatePicker onChange={onYearChange} picker="year" />
+            </Space>
+          </div>
+        </div>
+
+        <div ref={contentRef}>
+          <Table
+            dataSource={dataSource}
+            columns={columns}
+            loading={isLoading}
+          />
+        </div>
+      </div>
     );
 };
 

@@ -41,6 +41,12 @@ const btns = [
     count: "0",
     id: "Rad etildi",
   },
+  {
+    value: "Bartaraf qilingan",
+    label: "Bartaraf qilingan",
+    count: "0",
+    id: "Bartaraf qilingan",
+  },
 ];
 
 const columns = [
@@ -105,6 +111,11 @@ const statusOptions: any = {
     bgColor: "#FDD4D4",
     color: "#F42829",
   },
+
+  Bartaraf: {
+    bgColor: "#EB6402",
+    color: "#fff",
+  },
 };
 
 const PerformerDocuments = () => {
@@ -147,10 +158,11 @@ const PerformerDocuments = () => {
     () =>
       axiosT.get("/scores/cases/all/", {
         params: {
-          status: activeBtn,
+          status: activeBtn === "Bartaraf qilingan" ? undefined : activeBtn,
           category_id: activeCategory,
-          organization_name: searchText,
+          search: searchText,
           page: activePage,
+          removed: activeBtn === "Bartaraf qilingan" ? true : undefined,
         },
       }),
     {
@@ -161,13 +173,16 @@ const PerformerDocuments = () => {
           status: (
             <span
               style={{
-                color: statusOptions[item.status].color,
-                backgroundColor: statusOptions[item.status].bgColor,
+                color:
+                  statusOptions[item.removed ? "Bartaraf" : item.status].color,
+                backgroundColor:
+                  statusOptions[item.removed ? "Bartaraf" : item.status]
+                    .bgColor,
                 whiteSpace: "nowrap",
               }}
               className="px-2 py-1 rounded-lg"
             >
-              {item.status}
+              {item.removed ? "Bartaraf qilindi" : item.status}
             </span>
           ),
 

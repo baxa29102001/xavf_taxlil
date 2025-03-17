@@ -67,6 +67,24 @@ const SubmittedCaseByCategory = React.lazy(
 const SubmittedCaseByUserOrganization = React.lazy(
   () => import("@/pages/Hisobot/SubmittedCaseByUserOrganization")
 );
+const ActionTakenByCategoryPage = React.lazy(
+  () => import("@/pages/Hisobot/ActionTakenByCategory")
+);
+const ActionTakenByOrganizationPage = React.lazy(
+  () => import("@/pages/Hisobot/ActionTakenByOrganization")
+);
+const ActionTakenByExaminationByOrganization = React.lazy(
+  () => import("@/pages/Hisobot/ActionTakenByExaminationByOrganization")
+);
+const ActionTakenByExaminationByCategory = React.lazy(
+  () => import("@/pages/Hisobot/ActionTakenByExaminationByCategory")
+);
+const ActionTakenByProfilatikByOrganization = React.lazy(
+  () => import("@/pages/Hisobot/ActionTakenByProfilatikByOrganization")
+);
+const ActionTakenByProfilatikByCategory = React.lazy(
+  () => import("@/pages/Hisobot/ActionTakenByProfilatikByCategory")
+);
 const EntityCriteriaDetailPage = React.lazy(
   () => import("@/pages/performer/EntityCriteriaDetail")
 );
@@ -176,6 +194,30 @@ const Routes = [
   {
     path: "hisobot/submitted-cases-by-user-organization",
     element: <SubmittedCaseByUserOrganization />,
+  },
+  {
+    path: "hisobot/action-taken-by-category",
+    element: <ActionTakenByCategoryPage />,
+  },
+  {
+    path: "hisobot/action-taken-by-organization",
+    element: <ActionTakenByOrganizationPage />,
+  },
+  {
+    path: "hisobot/action-taken-by-examination-by-organization",
+    element: <ActionTakenByExaminationByOrganization />,
+  },
+  {
+    path: "hisobot/action-taken-by-examination-by-category",
+    element: <ActionTakenByExaminationByCategory />,
+  },
+  {
+    path: "hisobot/action-taken-by-profilatik-by-organization",
+    element: <ActionTakenByProfilatikByOrganization />,
+  },
+  {
+    path: "hisobot/action-taken-by-profilatik-by-category",
+    element: <ActionTakenByProfilatikByCategory />,
   },
   {
     path: "criteria/:id",

@@ -22,14 +22,17 @@ interface FileCreateModalProps {
   modalOpen: boolean;
   setModalOpen: () => void;
   criteria: any;
+  resendMode?: any;
 }
 export const FileCreateModal: FC<FileCreateModalProps> = ({
   modalOpen,
   setModalOpen,
   criteria,
+  resendMode,
 }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [loading, setLoading] = useState(false);
 
   const { id, organizationId } = useParams();
 
@@ -44,6 +47,7 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
   };
 
   const onFinish = (values: any) => {
+    setLoading(true);
     const formData = new FormData();
 
     const arr = values.files.map((value: any) => {
@@ -62,11 +66,17 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
       });
     });
 
-    formData.append("organization", JSON.stringify(Number(id)));
-    formData.append("criteria", JSON.stringify(criteria?.id));
+    if (!resendMode) {
+      formData.append("organization", JSON.stringify(Number(id)));
+      formData.append("criteria", JSON.stringify(criteria?.id));
+    }
 
-    axiosT
-      .post("/scores/score-create/", formData)
+    axiosT[!resendMode ? "post" : "patch"](
+      !resendMode
+        ? "/scores/score-create/"
+        : `/scores/cases/${criteria?.id}/resend/`,
+      formData
+    )
       .then(() => {
         messageApi.open({
           type: "success",
@@ -75,12 +85,14 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
         setModalOpen();
         form.resetFields();
       })
-      .catch((err) => {
+      .catch(() => {
         messageApi.open({
           type: "error",
           content: "Ma'lumot yaratishda xatolik",
         });
-      });
+        form.resetFields();
+      })
+      .finally(() => setLoading(false));
   };
   return (
     <>
@@ -95,6 +107,7 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
         width={"90%"}
         onCancel={() => {
           setModalOpen();
+          form.resetFields();
         }}
       >
         <>
@@ -112,8 +125,14 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
                     >
                       <CustomUpload multiple={false} />
                     </Form.Item>
-
                     <Form.Item
+                      label="Tavsiflar"
+                      className="col-span-2"
+                      name={["files", index, "description"]}
+                    >
+                      <TextArea />
+                    </Form.Item>
+                    {/* <Form.Item
                       label="Ko'rsatma turi"
                       name={["files", index, "file_types"]}
                     >
@@ -131,7 +150,7 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
                           },
                         ]}
                       />
-                    </Form.Item>
+                    </Form.Item> */}
                     <Form.Item noStyle shouldUpdate>
                       {({ getFieldValue, getFieldsValue }) => {
                         const fileTypes = getFieldValue([
@@ -162,14 +181,6 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
                                 style={{ width: "100%" }}
                               />
                             </Form.Item>
-
-                            <Form.Item
-                              label="Tavsiflar"
-                              className="col-span-2"
-                              name={["files", index, "description"]}
-                            >
-                              <TextArea />
-                            </Form.Item>
                           </>
                         ) : null;
                       }}
@@ -198,9 +209,10 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
             >
               Yangi fayl qo‘shish
             </Button>
+            <div className="mb-4"></div>
 
             <Form.Item style={{ marginTop: 20 }}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={loading}>
                 Yuborish
               </Button>
             </Form.Item>

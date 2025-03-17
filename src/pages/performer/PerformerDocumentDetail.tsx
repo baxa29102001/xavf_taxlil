@@ -1,10 +1,16 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
+import { ElliminationModal } from "@/components/common/ElliminationModal";
 import { FileCreateModal } from "@/components/common/FileCreateModal";
 import { ROLES } from "@/constants/enum";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
-import { DeleteOutlined, LeftOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  LeftOutlined,
+  PlusCircleOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -35,9 +41,14 @@ const columns = [
     key: "criteria",
   },
   {
-    title: "Javob yuborgan shaxs",
+    title: "Tasdiqlagan shaxs",
     dataIndex: "reviewed_by",
     key: "reviewed_by",
+  },
+  {
+    title: "Yuboruvchi shaxs",
+    dataIndex: "created_by",
+    key: "created_by",
   },
   {
     title: "Status",
@@ -48,6 +59,11 @@ const columns = [
     title: "Fayl",
     dataIndex: "file",
     key: "file",
+  },
+  {
+    title: "",
+    dataIndex: "edit",
+    key: "edit",
   },
 ];
 
@@ -69,6 +85,10 @@ const statusOptions: any = {
     bgColor: "#FDD4D4",
     color: "#F42829",
   },
+  Bartaraf: {
+    bgColor: "#EB6402",
+    color: "#fff",
+  },
 };
 
 const { TextArea } = Input;
@@ -79,6 +99,18 @@ const PerformerDocumentDetail = () => {
   const navigate = useNavigate();
 
   const [messageApi, contextHolder] = message.useMessage();
+  const [elliminationModal, setEllimationModal] = useState<any>({
+    modal: false,
+    item: {},
+  });
+  const [isClearCrieteraModal, setIsClearCrieteraModal] = useState<any>({
+    modal: false,
+    item: {},
+  });
+  const [clearCrieteraModal, setClearCrieteraModal] = useState<any>({
+    modal: false,
+    item: {},
+  });
 
   const [fileAddModal, setFileAddModal] = useState<any>({
     modal: false,
@@ -92,7 +124,7 @@ const PerformerDocumentDetail = () => {
   const title = searchParams.get("title");
 
   const [cancelCommentModal, setCancelCommentModal] = useState(false);
-
+  const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState<any>({
     modal: false,
     item: {},
@@ -111,13 +143,16 @@ const PerformerDocumentDetail = () => {
           status: (
             <span
               style={{
-                color: statusOptions[data.status].color,
-                backgroundColor: statusOptions[data.status].bgColor,
+                color:
+                  statusOptions[data.removed ? "Bartaraf" : data.status].color,
+                backgroundColor:
+                  statusOptions[data.removed ? "Bartaraf" : data.status]
+                    .bgColor,
                 whiteSpace: "nowrap",
               }}
               className="px-2 py-1 rounded-lg"
             >
-              {data.status}
+              {data.removed ? "Bartaraf qilindi" : data.status}
             </span>
           ),
 
@@ -131,6 +166,60 @@ const PerformerDocumentDetail = () => {
               <FileIcon />
               Fayllar
             </button>
+          ),
+
+          edit: (
+            <>
+              {data.status === "Tasdiqlandi" && (
+                <div className="flex items-center gap-3">
+                  <button
+                    className="bg-[#DCE4FF]  rounded-md cursor-pointer   py-2 px-3 "
+                    style={{
+                      whiteSpace: "nowrap",
+                    }}
+                    onClick={() => {
+                      setEllimationModal({
+                        modal: true,
+                        item: data,
+                      });
+                    }}
+                  >
+                    <PlusCircleOutlined /> Ko'rsatma
+                  </button>
+                  <button
+                    className="bg-[#DCE4FF]  rounded-md cursor-pointer   py-2 px-3 "
+                    style={{
+                      whiteSpace: "nowrap",
+                    }}
+                    onClick={() => {
+                      setClearCrieteraModal({
+                        modal: true,
+                        item: data,
+                      });
+                    }}
+                  >
+                    <PlusCircleOutlined /> Ko'rilgan chora
+                  </button>
+
+                  {!data.removed && (
+                    <button
+                      className="bg-[#DCE4FF] py-2 px-3 cursor-pointer"
+                      style={{
+                        whiteSpace: "nowrap",
+                      }}
+                      onClick={() => {
+                        setIsClearCrieteraModal({
+                          modal: true,
+                          item: data,
+                        });
+                      }}
+                    >
+                      Bartaraf etish
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
           ),
         });
       },
@@ -167,6 +256,45 @@ const PerformerDocumentDetail = () => {
         setCancelCommentModal(false);
 
         refetch();
+      });
+  };
+
+  const onFinishHandler = (data: any) => {
+    const file = data.file[0].originFileObj;
+    delete file.uid;
+    const formData = new FormData();
+
+    formData.append(
+      "case",
+      JSON.stringify(Number(isClearCrieteraModal.item.id))
+    );
+    formData.append("file", file);
+    formData.append("comment", data.comment);
+
+    axiosT
+      .post("/scores/removed-scores/create/", formData)
+      .then(() => {
+        messageApi.open({
+          type: "success",
+          content: "Muaffaqiyatli yaratildi",
+        });
+
+        setIsClearCrieteraModal({
+          modal: false,
+          item: {},
+        });
+        form.resetFields();
+      })
+      .catch(() => {
+        setIsClearCrieteraModal({
+          modal: false,
+          item: {},
+        });
+
+        messageApi.open({
+          type: "error",
+          content: "Ma'lumot yaratishda xatolik",
+        });
       });
   };
 
@@ -275,9 +403,7 @@ const PerformerDocumentDetail = () => {
             return (
               <div className="flex items-center justify-between">
                 <p>
-                  {index + 1}. {file?.description}, {file?.deadline}
-                  {","}
-                  {file?.clauses_number}
+                  {index + 1}. {isModalOpen?.item.date}
                 </p>
 
                 <a href={file?.file_url} target="_blank">
@@ -290,7 +416,7 @@ const PerformerDocumentDetail = () => {
             );
           })}
         </div>
-      </Modal>{" "}
+      </Modal>
       <Modal
         title={"Rad etish"}
         open={cancelCommentModal}
@@ -318,125 +444,75 @@ const PerformerDocumentDetail = () => {
       <FileCreateModal
         criteria={fileAddModal?.item}
         modalOpen={fileAddModal.modal}
+        resendMode
         setModalOpen={() => {
           setFileAddModal({
             modal: false,
             item: {},
           });
+
+          refetch();
         }}
       />
-      {/* <Modal
-        title={"Fayl biriktirish"}
-        open={fileAddModal.modal}
+      <ElliminationModal
+        criteria={elliminationModal?.item}
+        typeChora="korsatma"
+        modalOpen={elliminationModal.modal}
+        setModalOpen={() => {
+          setEllimationModal({
+            modal: false,
+            item: {},
+          });
+        }}
+      />
+      <ElliminationModal
+        criteria={clearCrieteraModal?.item}
+        typeChora="mamuriy"
+        modalOpen={clearCrieteraModal.modal}
+        setModalOpen={() => {
+          setClearCrieteraModal({
+            modal: false,
+            item: {},
+          });
+        }}
+      />
+      <Modal
+        title={isClearCrieteraModal.item.criteria}
+        open={isClearCrieteraModal.modal}
+        onOk={() => {}}
         footer={null}
-        okText="Yuborish"
-        cancelText="Bekor qilish"
-        width={"90%"}
         onCancel={() => {
-          setFileAddModal({
+          setIsClearCrieteraModal({
             modal: false,
             item: {},
           });
         }}
       >
-        <>
-          <Form form={form} layout="vertical" onFinish={onFinishFileAdd}>
-            <div className="grid grid-cols-4 gap-4">
-              {files.map((file, index) => (
-                <Card key={file.id} style={{ marginBottom: 10 }}>
-                  <Space direction="vertical" style={{ width: "100%" }}>
-                    <Form.Item
-                      label="Fayl"
-                      name={["files", index, "uploaded_files"]}
-                      rules={[
-                        { required: true, message: "Bandlar sonini kiriting!" },
-                      ]}
-                    >
-                      <CustomUpload multiple={false} />
-                    </Form.Item>
-                    <Form.Item
-                      label="Bandlar soni"
-                      name={["files", index, "clauses_numbers"]}
-                      rules={[
-                        { required: true, message: "Bandlar sonini kiriting!" },
-                      ]}
-                    >
-                      <InputNumber
-                        min={1}
-                        placeholder="Bandlar soni"
-                        style={{ width: "100%" }}
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      label="Tugash sanasi"
-                      name={["files", index, "deadlines"]}
-                      rules={[
-                        { required: true, message: "Tugash sanasini tanlang!" },
-                      ]}
-                    >
-                      <DatePicker
-                        format="YYYY-MM-DD"
-                        style={{ width: "100%" }}
-                      />
-                    </Form.Item>
-
-                    <Form.Item
-                      label="Ko'rsatma turi"
-                      name={["files", index, "file_types"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Ko'rsatma turini tanlang!",
-                        },
-                      ]}
-                    >
-                      <Select
-                        placeholder="Ko'rsatma turini tanlang"
-                        options={[
-                          {
-                            label: "Taqdimnoma",
-                            value: 1,
-                          },
-                          {
-                            label: "Ko'rsatma",
-                            value: 2,
-                          },
-                        ]}
-                      />
-                    </Form.Item>
-
-                    {files.length > 1 && (
-                      <Button
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => removeFile(file.id)}
-                      >
-                        O'chirish
-                      </Button>
-                    )}
-                  </Space>
-                </Card>
-              ))}
-            </div>
-
-            <Button
-              type="dashed"
-              onClick={addFile}
-              icon={<PlusOutlined />}
-              block
+        <div className="mt-6">
+          <Form form={form} onFinish={onFinishHandler}>
+            <Form.Item
+              label="Faylni yuklash"
+              name={"file"}
+              rules={[
+                {
+                  required: true,
+                  message: "Faylni tanlang",
+                },
+              ]}
             >
-              Yangi fayl qo‘shish
-            </Button>
-
+              <CustomUpload />
+            </Form.Item>{" "}
+            <Form.Item label="Izoh" name={"comment"}>
+              <TextArea />
+            </Form.Item>
             <Form.Item style={{ marginTop: 20 }}>
               <Button type="primary" htmlType="submit">
                 Yuborish
               </Button>
             </Form.Item>
           </Form>
-        </>
-      </Modal> */}
+        </div>
+      </Modal>
     </div>
   );
 };

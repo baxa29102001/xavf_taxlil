@@ -14,7 +14,7 @@ import {
   Table,
   message,
 } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -41,8 +41,8 @@ const columns = [
   // },
   {
     title: "Muddat",
-    dataIndex: "date",
-    key: "date",
+    dataIndex: "start_date",
+    key: "start_date",
   },
   {
     title: "Tavsif",
@@ -94,10 +94,25 @@ const ExaminationPage = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
+  const [organizationParams, setOrganizationParams] = useState({
+    category_id: undefined,
+    type: undefined,
+  });
+
   const { config } = useDetectRoles();
 
   const [newPreventionModal, setNewPreventionModal] = useState(false);
+  const [categories, setCategories] = useState([]);
 
+  useQuery(
+    ["categoriesEntites"],
+    () => axiosT.get("/organizations/categories/"),
+    {
+      onSuccess({ data }) {
+        setCategories(data);
+      },
+    }
+  );
   const { refetch } = useQuery(
     ["examination"],
     () => axiosT.get("/examination/list/"),
@@ -135,13 +150,10 @@ const ExaminationPage = () => {
     }
   );
   useQuery(
-    ["examinationOrganization"],
+    ["examinationOrganization", organizationParams],
     () =>
       axiosT.get("/examination/organization-list/", {
-        params: {
-          year: new Date().getFullYear(),
-          quarter: getQuarter(new Date().getMonth() + 1),
-        },
+        params: organizationParams,
       }),
     {
       onSuccess({ data }) {
@@ -162,7 +174,8 @@ const ExaminationPage = () => {
   const onFinish = (dataPayload: any) => {
     const data = {
       ...dataPayload,
-      date: dataPayload.date.format("YYYY-MM-DD"),
+      start_date: dataPayload?.start_date?.format("YYYY-MM-DD"),
+      end_date: dataPayload?.end_date?.format("YYYY-MM-DD"),
     };
     const formData = new FormData();
     Object.keys(data).forEach((item: any) => {
@@ -185,10 +198,16 @@ const ExaminationPage = () => {
         setNewPreventionModal(false);
         form.resetFields();
       })
-      .catch((err) => {
+      .catch(() => {
         console.log("err");
       });
   };
+
+  useEffect(() => {
+    if (!organizationParams.category_id) {
+      form.setFieldValue("organization", null);
+    }
+  }, [organizationParams.category_id]);
 
   return (
     <div className="px-4 py-5">
@@ -219,6 +238,7 @@ const ExaminationPage = () => {
         footer={null}
         onCancel={() => setNewPreventionModal(false)}
         onClose={() => setNewPreventionModal(false)}
+        width={"50%"}
       >
         <>
           <Form
@@ -228,6 +248,51 @@ const ExaminationPage = () => {
             name="newPrevention"
           >
             <div className="grid grid-cols-2 gap-3">
+              <Form.Item
+                label="Tekshiruv uchun asos"
+                name={"type"}
+                rules={[{ required: true, message: "Majburiy maydon" }]}
+              >
+                <Select
+                  placeholder="Tanlash"
+                  options={[
+                    {
+                      label: "Jismoniy va yuridik shaxs murojaati",
+                      value: 1,
+                    },
+                    {
+                      label: "Xavfni tahlil qilish natijasi",
+                      value: 2,
+                    },
+                  ]}
+                  onChange={(value: number) => {
+                    setOrganizationParams((res: any) => {
+                      return {
+                        ...res,
+                        type: value,
+                      };
+                    });
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Tadbirkorlik subyektlari" name={"category"}>
+                <Select
+                  placeholder="Kategoriya tanlash"
+                  options={categories.map((category: any) => ({
+                    label: category.name,
+                    value: category.id,
+                  }))}
+                  onChange={(value: number) => {
+                    setOrganizationParams((res: any) => {
+                      return {
+                        ...res,
+                        category_id: value,
+                      };
+                    });
+                  }}
+                  allowClear
+                />
+              </Form.Item>
               <Form.Item
                 label="Tashkilot nomi"
                 className="col-span-2"
@@ -242,6 +307,7 @@ const ExaminationPage = () => {
                     status: item.risk_status,
                     inn: item.inn,
                   }))}
+                  disabled={!organizationParams.category_id}
                   optionRender={(optiondata: any) => {
                     const option = optiondata.data as any;
 
@@ -266,16 +332,6 @@ const ExaminationPage = () => {
                 />
               </Form.Item>
               <Form.Item
-                label="Muddati"
-                rules={[{ required: true, message: "Majburiy maydon" }]}
-                name={"date"}
-              >
-                <DatePicker
-                  placeholder="Muddatni tanlash"
-                  style={{ width: "100%" }}
-                />
-              </Form.Item>{" "}
-              <Form.Item
                 label="Inspektor"
                 name={"inspector"}
                 rules={[{ required: true, message: "Majburiy maydon" }]}
@@ -287,7 +343,27 @@ const ExaminationPage = () => {
                     label: item.full_name,
                   }))}
                 />
+              </Form.Item>
+              <Form.Item
+                label="Tekshirish boshlanish sanasi"
+                rules={[{ required: true, message: "Majburiy maydon" }]}
+                name={"start_date"}
+              >
+                <DatePicker
+                  placeholder="Muddatni tanlash"
+                  style={{ width: "100%" }}
+                />
               </Form.Item>{" "}
+              <Form.Item
+                label="Tekshirish tugashi sanasi"
+                rules={[{ required: true, message: "Majburiy maydon" }]}
+                name={"end_date"}
+              >
+                <DatePicker
+                  placeholder="Muddatni tanlash"
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
               <Form.Item label="Fayl" name={"file"}>
                 <CustomUpload multiple />
               </Form.Item>
