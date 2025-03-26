@@ -85,6 +85,12 @@ const ActionTakenByProfilatikByOrganization = React.lazy(
 const ActionTakenByProfilatikByCategory = React.lazy(
   () => import("@/pages/Hisobot/ActionTakenByProfilatikByCategory")
 );
+const EliminationListPage = React.lazy(
+  () => import("@/pages/Elimination/EliminationList")
+);
+const SolutionListPage = React.lazy(
+  () => import("@/pages/Solutions/SolutionList")
+);
 const EntityCriteriaDetailPage = React.lazy(
   () => import("@/pages/performer/EntityCriteriaDetail")
 );
@@ -124,6 +130,14 @@ const Routes = [
   {
     path: "documents",
     element: <PerformerDocumentsPage />,
+  },
+  {
+    path: "elimination",
+    element: <EliminationListPage />,
+  },
+  {
+    path: "solutions",
+    element: <SolutionListPage />,
   },
   {
     path: "documents/:id",

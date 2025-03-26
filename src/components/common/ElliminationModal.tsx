@@ -27,6 +27,7 @@ export const ElliminationModal: FC<ElliminationModalProps> = ({
     delete values.uploaded_files[0].originFileObj.uid;
     formData.append("file", values.uploaded_files[0].originFileObj);
     formData.append("case_id", criteria?.id);
+    formData.append("description", values?.description);
     if (typeChora === "korsatma") {
       formData.append("file_type", values.file_type);
     } else {

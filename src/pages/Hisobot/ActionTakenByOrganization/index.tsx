@@ -1,6 +1,9 @@
 import { useQuery } from "react-query";
 import axiosT from "@/api/axios.ts";
-import { IStatusBuCategory } from "@/Interface/IHisobot.ts";
+import {
+  IActionTakenByMainCategory,
+  IStatusBuCategory,
+} from "@/Interface/IHisobot.ts";
 import { Button, DatePicker, Input, Select, Space, Table } from "antd";
 import { useState } from "react";
 import useDebouncedValue from "@/hooks/use-debounced-value.tsx";
@@ -16,46 +19,48 @@ const { Search } = Input;
 const columns = [
   {
     title: "Yo‘nalishlar nomi",
-    dataIndex: "inn",
-    key: "inn",
+    dataIndex: "category",
+    key: "category",
   },
 
   {
     title: "Tekshirishlar soni",
-    dataIndex: "clear_cases_count",
-    key: "clear_cases_count",
+    dataIndex: "examinations",
+    key: "examinations",
   },
   {
     title: "Profilaktikalar soni",
-    dataIndex: "approved_count",
-    key: "approved_count",
+    dataIndex: "profilaktika",
+    key: "profilaktika",
   },
   {
     title: "Chiqarilgan ko‘rsatmalar soni",
-    dataIndex: "rejected_count",
-    key: "rejected_count",
+    dataIndex: "instructions",
+    key: "instructions",
   },
   {
     title: "Chiqarilgan taqdimnomalar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "submissions",
+    key: "submissions",
   },
   {
     title: "Ko‘rilgan intizomiy choralar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "disciplinary",
+    key: "disciplinary",
   },
   {
     title: "Ko‘rilgan maʼmuriy choralar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "administrative",
+    key: "administrative",
   },
 ];
 
 const Index = () => {
   const currentYear = dayjs().year();
 
-  const [dataSource, setDataSource] = useState<IStatusBuCategory[]>([]);
+  const [dataSource, setDataSource] = useState<IActionTakenByMainCategory[]>(
+    []
+  );
 
   const [searchText, setSearchText] = useState("");
   const [quarter, setQuarter] = useState<number>();
@@ -74,21 +79,17 @@ const Index = () => {
   };
 
   const { isLoading } = useQuery(
-    ["case-status-by-category", searchValue, year, quarter],
+    ["action-taken-main-by-category", searchValue, year],
     () =>
-      axiosT.get<{ categories: IStatusBuCategory[] }>(
-        `/reports/case-status-by-category/`,
-        {
-          params: {
-            year: year,
-            search: searchValue,
-            quarter: quarter,
-          },
-        }
-      ),
+      axiosT.get<IActionTakenByMainCategory[]>(`/reports/report-by-category/`, {
+        params: {
+          year: year,
+          // search: searchValue,
+        },
+      }),
     {
       onSuccess({ data }) {
-        setDataSource(data.categories);
+        setDataSource(data);
       },
     }
   );
@@ -102,7 +103,7 @@ const Index = () => {
         <div className="col-span-6">
           <PageTitle
             title={
-              "Xavf tahlili natijalariga asosan ko‘rilgan choralar tadbirkorlik subyeklar kesimida"
+              "Xavf tahlili natijalariga asosan ko‘rilgan choralar yo‘nalishlar kesimida"
             }
             back
           />
@@ -129,8 +130,8 @@ const Index = () => {
           </Space>
         </div> */}
       </div>
-
-      {/* <div className={"grid grid-cols-12 gap-4 mb-5"}>
+      {/* 
+      <div className={"grid grid-cols-12 gap-4 mb-5"}>
         <div className="col-span-6">
           <Search
             placeholder="Tashkilot nomi"
@@ -155,7 +156,7 @@ const Index = () => {
 
       <div ref={contentRef}>
         <Table
-          dataSource={[]}
+          dataSource={dataSource}
           columns={columns}
           loading={isLoading}
           locale={{

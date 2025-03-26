@@ -59,7 +59,7 @@ const EntityCriteriaDetail = () => {
       /> */}
 
       <div className="grid grid-cols-3 gap-6">
-        {actions?.results?.map((criteria: any) => {
+        {actions?.cases?.map((criteria: any) => {
           return (
             <div className="p-3 border border-black/30 rounded-xl">
               <div className="flex items-center justify-between">
@@ -81,7 +81,7 @@ const EntityCriteriaDetail = () => {
                   }}
                   className="text-lg font-semibold"
                 >
-                  <span> {criteria.calculated_score}</span>
+                  <span> { criteria.removed ? criteria.removed_score : criteria.added_score}</span>
                 </p>
               </div>
               <hr className="my-2 border-black/30" />

@@ -12,6 +12,7 @@ import {
   Modal,
   Select,
   Table,
+  Tag,
   message,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -85,6 +86,7 @@ const statusOptions: any = {
 };
 
 const { TextArea } = Input;
+const { Option } = Select;
 
 const ExaminationPage = () => {
   const [documentsData, setDocumentsData] = useState([]);
@@ -93,6 +95,9 @@ const ExaminationPage = () => {
   const [inspectors, setInspectors] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
+
+  const [organization_id, setOrganization_id] = useState<number>();
+  const [inspectorsForRandomList, setInspectorsForRandomList] = useState([]);
 
   const [organizationParams, setOrganizationParams] = useState({
     category_id: undefined,
@@ -162,11 +167,26 @@ const ExaminationPage = () => {
     }
   );
   useQuery(
-    ["examinationInspectors"],
-    () => axiosT.get("/examination/inspectors/"),
+    ["examinationInspectors", organizationParams],
+    () => axiosT.get("/examination/inspectors/", {}),
     {
       onSuccess({ data }) {
         setInspectors(data);
+      },
+    }
+  );
+  useQuery(
+    ["examinationInspectorsForRandom", organizationParams, organization_id],
+    () =>
+      axiosT.get("/examination/select/", {
+        params: {
+          category_id: organizationParams.category_id,
+          organization_id: organization_id,
+        },
+      }),
+    {
+      onSuccess({ data }) {
+        setInspectorsForRandomList(data);
       },
     }
   );
@@ -180,12 +200,16 @@ const ExaminationPage = () => {
     const formData = new FormData();
     Object.keys(data).forEach((item: any) => {
       if (item === "file") return;
+      if (item === "inspector") return;
       formData.append(item, data[item]);
     });
 
     data.file.forEach((item: any) => {
       delete item.originFileObj.uid;
       formData.append("file", item.originFileObj);
+    });
+    data.inspector.forEach((item: any) => {
+      formData.append("inspector", item);
     });
     axiosT
       .post("/examination/create/", formData)
@@ -246,6 +270,9 @@ const ExaminationPage = () => {
             onFinish={onFinish}
             form={form}
             name="newPrevention"
+            initialValues={{
+              inspector: [],
+            }}
           >
             <div className="grid grid-cols-2 gap-3">
               <Form.Item
@@ -329,20 +356,79 @@ const ExaminationPage = () => {
                       </div>
                     );
                   }}
+                  onChange={(value: number) => {
+                    setOrganization_id(value);
+                  }}
                 />
               </Form.Item>
               <Form.Item
                 label="Inspektor"
                 name={"inspector"}
+                className="col-span-2"
                 rules={[{ required: true, message: "Majburiy maydon" }]}
               >
                 <Select
+                  disabled={!organization_id}
                   placeholder="Tanlash"
-                  options={inspectors.map((item: any) => ({
-                    value: item.id,
-                    label: item.full_name,
-                  }))}
-                />
+                  // options={inspectors.map((item: any) => ({
+                  //   value: item.id,
+                  //   label: item.full_name,
+                  // }))}
+                  mode="multiple"
+                  // tagRender={(props) => {
+                  //   const { label, value, onClose } = props;
+                  //   return (
+                  //     <Tag
+                  //       color="blue"
+                  //       closable
+                  //       onClose={onClose}
+                  //       style={{ marginRight: 3 }}
+                  //     >
+                  //       {label}
+                  //     </Tag>
+                  //   );
+                  // }}
+                  dropdownRender={(menu) => {
+                    return (
+                      <>
+                        <div className="mb-4">{menu}</div>
+                        <button
+                          className="bg-[#4E75FF] rounded-sm py-2 px-6 text-white cursor-pointer"
+                          onClick={() => {
+                            const random: any = Math.floor(
+                              Math.random() * inspectorsForRandomList.length
+                            );
+
+                            const inspector: any =
+                              inspectorsForRandomList[random];
+                            form.setFieldValue(
+                              "inspector",
+                              Array.from(
+                                new Set([
+                                  ...form.getFieldValue("inspector"),
+                                  inspector.id,
+                                ])
+                              )
+                            );
+                            setInspectorsForRandomList(
+                              inspectorsForRandomList.filter(
+                                (_: any, index: number) => random !== index
+                              )
+                            );
+                          }}
+                        >
+                          Random tanlash
+                        </button>
+                      </>
+                    );
+                  }}
+                >
+                  {inspectors.map((item: any) => (
+                    <Option disabled value={item.id} key={item.id}>
+                      {item.full_name}
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
               <Form.Item
                 label="Tekshirish boshlanish sanasi"

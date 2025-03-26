@@ -1,123 +1,27 @@
 import { logout } from "@/api/auth";
-import axiosT from "@/api/axios";
-import { ROLES } from "@/constants/enum";
+import { Sidebar } from "@/components/ui/Sidebar";
 import AuthContext from "@/context/authContext";
 import {
-  AlertOutlined,
-  BarChartOutlined,
-  CalculatorOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
   UserOutlined,
-  UserSwitchOutlined,
 } from "@ant-design/icons";
-import { Button, Dropdown, Layout, Menu, Space, theme } from "antd";
-import { useContext, useState } from "react";
-import { useQuery } from "react-query";
-import { Link, Outlet, useNavigate } from "react-router-dom";
-const { Header, Sider, Content } = Layout;
+import { Button, Dropdown, Layout, Space, theme } from "antd";
+import React, { useCallback, useContext, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+const { Header, Content } = Layout;
 
-const routesOption = (notificationCount: number) => [
-  {
-    key: "",
-    icon: <BarChartOutlined />,
-    label: <span className="text-base font-medium">Dashboard</span>,
-  },
-  {
-    key: "entity",
-    icon: <UserSwitchOutlined />,
-    label: (
-      <span className="text-base font-medium">Tadbirkorlik subyektlari</span>
-    ),
-  },
-  {
-    key: "documents",
-    icon: <UploadOutlined />,
-
-    label: (
-      <div className="flex items-center justify-between">
-        <span className="text-base font-medium">Hujjatlar </span>
-        {notificationCount !== 0 && (
-          <span className="bg-red-600 rounded-full text-center text-white w-5 h-5 text-[10px] flex items-center justify-center">
-            {notificationCount}
-          </span>
-        )}
-      </div>
-    ),
-  },
-  {
-    key: "prevention",
-    icon: <AlertOutlined />,
-    label: <span className="text-base font-medium">Profilaktika</span>,
-  },
-  {
-    key: "examination",
-    icon: <CalculatorOutlined />,
-    label: <span className="text-base font-medium">Tekshirish</span>,
-  },
-  {
-    key: "hisobot",
-    icon: <CalculatorOutlined />,
-    label: <span className="text-base font-medium">Hisobot</span>,
-  },
-];
-
-const getRoutesForRole = (role: ROLES, notificationCount: number) => {
-  switch (role) {
-    case ROLES.IJROCHI:
-      return routesOption(0);
-    case ROLES.MASUL:
-      return routesOption(notificationCount);
-    case ROLES.RAHBAR:
-      return [
-        {
-          key: "",
-          icon: <BarChartOutlined />,
-          label: <span className="text-base font-medium">Dashboard</span>,
-        },
-        {
-          key: "entity",
-          icon: <UserSwitchOutlined />,
-          label: (
-            <span className="text-base font-medium">
-              Tadbirkorlik subyektlari
-            </span>
-          ),
-        },
-
-        {
-          key: "examination",
-          icon: <CalculatorOutlined />,
-          label: <span className="text-base font-medium">Tekshirish</span>,
-        },
-
-        {
-          key: "hisobot",
-          icon: <CalculatorOutlined />,
-          label: <span className="text-base font-medium">Hisobot</span>,
-        },
-      ];
-    default:
-      [];
-  }
-};
-
-export const MainLayout = () => {
+export const MainLayout = React.memo(() => {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const [notifactionCount, setNotifcationCount] = useState(0);
-
   const { setUserHandler, userDetails } = useContext(AuthContext);
-
-  const [activeRoute, setActiveRoute] = useState("");
 
   const navigate = useNavigate();
 
-  const logoutHandler = () => {
+  const logoutHandler = useCallback(() => {
     logout()
       .then(() => {
         navigate("/login");
@@ -125,50 +29,11 @@ export const MainLayout = () => {
         localStorage.clear();
       })
       .catch(() => {});
-  };
+  }, [navigate, setUserHandler]);
 
-  useQuery(
-    ["mainLayoutCaseStatusDistribution", activeRoute],
-    () => axiosT.get("/dashboard/case-status-distribution/"),
-    {
-      onSuccess({ data }) {
-        setNotifcationCount(data["Yangi"]);
-      },
-    }
-  );
   return (
     <Layout>
-      <Sider
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        className="h-screen px-4 "
-        width={"234px"}
-        style={{
-          position: "sticky",
-          top: "0",
-        }}
-      >
-        <Link to={"/"}>
-          <div className="flex items-center gap-2 py-10 px-2">
-            <img src="/logo.svg" />
-            {!collapsed && (
-              <h2 className="text-white">“OʻZKOMNAZORAT” INSPEKSIYASI</h2>
-            )}{" "}
-          </div>
-        </Link>
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={[activeRoute]}
-          items={getRoutesForRole(userDetails.role, notifactionCount)}
-          onClick={(item: any) => {
-            setActiveRoute(item.key);
-            navigate(item.key);
-          }}
-          style={{}}
-        />
-      </Sider>
+      <Sidebar collapsed={collapsed} />
       <Layout>
         <Header
           style={{
@@ -229,4 +94,4 @@ export const MainLayout = () => {
       </Layout>
     </Layout>
   );
-};
+});

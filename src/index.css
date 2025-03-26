@@ -5,3 +5,16 @@
 .Monserrat {
   font-family: "Montserrat", sans-serif;
 }
+
+.ant-menu-submenu-title {
+  color: "#fff";
+}
+.ant-menu-submenu-open .ant-menu-submenu-title,
+.ant-menu-submenu-selected .ant-menu-submenu-title {
+  color: #fff !important;
+}
+.ant-menu-submenu-title:hover,
+.ant-menu-submenu-title:hover {
+  background-color: #fff !important;
+  color: #10384f !important;
+}

@@ -1,6 +1,9 @@
 import { useQuery } from "react-query";
 import axiosT from "@/api/axios.ts";
-import { IStatusBuCategory } from "@/Interface/IHisobot.ts";
+import {
+  IActionTakenByCategory,
+  IStatusBuCategory,
+} from "@/Interface/IHisobot.ts";
 import { Button, DatePicker, Input, Select, Space, Table } from "antd";
 import { useState } from "react";
 import useDebouncedValue from "@/hooks/use-debounced-value.tsx";
@@ -15,43 +18,48 @@ const { Search } = Input;
 
 const columns = [
   {
-    title: "Yo‘nalishlar nomi",
+    title: "Organizatisya nomi",
+    dataIndex: "organization_name",
+    key: "organization_name",
+  },
+  {
+    title: "Organizatisya INN",
     dataIndex: "inn",
     key: "inn",
   },
 
   {
     title: "Tekshirishlar soni",
-    dataIndex: "clear_cases_count",
-    key: "clear_cases_count",
+    dataIndex: "examinations_count",
+    key: "examinations_count",
   },
 
   {
     title: "Chiqarilgan ko‘rsatmalar soni",
-    dataIndex: "rejected_count",
-    key: "rejected_count",
+    dataIndex: "instructions_count",
+    key: "instructions_count",
   },
   {
     title: "Chiqarilgan taqdimnomalar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "submissions_count",
+    key: "submissions_count",
   },
   {
     title: "Ko‘rilgan intizomiy choralar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "disciplinary_measures_count",
+    key: "disciplinary_measures_count",
   },
   {
     title: "Ko‘rilgan maʼmuriy choralar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "administrative_measures_count",
+    key: "administrative_measures_count",
   },
 ];
 
 const Index = () => {
   const currentYear = dayjs().year();
 
-  const [dataSource, setDataSource] = useState<IStatusBuCategory[]>([]);
+  const [dataSource, setDataSource] = useState<IActionTakenByCategory[]>([]);
 
   const [searchText, setSearchText] = useState("");
   const [quarter, setQuarter] = useState<number>();
@@ -70,21 +78,20 @@ const Index = () => {
   };
 
   const { isLoading } = useQuery(
-    ["case-status-by-category", searchValue, year, quarter],
+    ["action-taken-by-category", searchValue, year],
     () =>
-      axiosT.get<{ categories: IStatusBuCategory[] }>(
-        `/reports/case-status-by-category/`,
+      axiosT.get<{ data: IActionTakenByCategory[] }>(
+        `/reports/measures-by-organization/`,
         {
           params: {
             year: year,
             search: searchValue,
-            quarter: quarter,
           },
         }
       ),
     {
       onSuccess({ data }) {
-        setDataSource(data.categories);
+        setDataSource(data.data);
       },
     }
   );
@@ -98,7 +105,7 @@ const Index = () => {
         <div className="col-span-6">
           <PageTitle
             title={
-              "O‘tkazilgan tekshirishlarga asosan ko‘rilgan choralar yo‘nalishlar kesimida"
+              "Xavf tahlili natijalariga asosan ko‘rilgan choralar tadbirkorlik subyeklar kesimida"
             }
             back
           />
@@ -126,7 +133,7 @@ const Index = () => {
         </div> */}
       </div>
 
-      {/* <div className={"grid grid-cols-12 gap-4 mb-5"}>
+      <div className={"grid grid-cols-12 gap-4 mb-5"}>
         <div className="col-span-6">
           <Search
             placeholder="Tashkilot nomi"
@@ -136,22 +143,22 @@ const Index = () => {
         </div>
         <div className="col-span-6 flex justify-end">
           <Space>
-            <Select
+            {/* <Select
               allowClear
               onChange={(quarter) => setQuarter(quarter)}
               placeholder="Chorak"
               options={QuarterList}
               className={"w-[250px]"}
-            />
+            /> */}
 
             <DatePicker onChange={onYearChange} picker="year" />
           </Space>
         </div>
-      </div> */}
+      </div>
 
       <div ref={contentRef}>
         <Table
-          dataSource={[]}
+          dataSource={dataSource}
           columns={columns}
           loading={isLoading}
           locale={{

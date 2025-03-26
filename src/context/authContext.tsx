@@ -1,12 +1,10 @@
 import { getMe } from "@/api/auth";
-import { FC, createContext, useState } from "react";
+import { FC, createContext, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 
 const AuthContext = createContext({
   userDetails: null as any | null,
-  step: Number(localStorage.getItem("step")) || 1,
   setUserHandler: (_data: any | null) => {},
-  setStepHandler: (_data: number) => {},
 });
 
 interface AuthContextProviderTypes {
@@ -17,27 +15,27 @@ export const AuthContextProvider: FC<AuthContextProviderTypes> = ({
   children,
 }) => {
   const [userDetails, setUserDetails] = useState<any | null>(null);
-  const [step, setStep] = useState(Number(localStorage.getItem("step")) || 1);
 
-  const { isLoading } = useQuery("userDetails", () => getMe(), {
+  const { isLoading } = useQuery(["userDetails"], () => getMe(), {
+    staleTime: 1000 * 60 * 5, // 5 daqiqa
+    cacheTime: 1000 * 60 * 10, // 10 daqiqa
     onSuccess(data: any) {
       setUserDetails(data);
     },
   });
 
+  // console.log("context rendering");
+
   const setUserHandler = (data: any | null) => {
     setUserDetails(data);
   };
 
-  const setStepHandler = (data: number) => {
-    setStep(data);
-    localStorage.setItem("step", data.toString());
-  };
-
+  const contextValue = useMemo(
+    () => ({ userDetails, setUserHandler }),
+    [userDetails]
+  );
   return (
-    <AuthContext.Provider
-      value={{ userDetails, setUserHandler, step, setStepHandler }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {isLoading && (
         <div className="flex items-center justify-center text-white h-screen">
           Yuklanmoqda...

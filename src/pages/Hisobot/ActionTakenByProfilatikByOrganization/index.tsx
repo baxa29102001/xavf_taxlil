@@ -1,6 +1,10 @@
 import { useQuery } from "react-query";
 import axiosT from "@/api/axios.ts";
-import { IStatusBuCategory } from "@/Interface/IHisobot.ts";
+import {
+  IActionTakenByProfilatikaByOrganization,
+  INNANDNAME,
+  IStatusBuCategory,
+} from "@/Interface/IHisobot.ts";
 import { Button, DatePicker, Input, Select, Space, Table } from "antd";
 import { useState } from "react";
 import useDebouncedValue from "@/hooks/use-debounced-value.tsx";
@@ -21,51 +25,53 @@ const columns = [
   },
   {
     title: "Tadbirkorlik subyekti nomi",
-    dataIndex: "total_cases_count",
-    key: "total_cases_count",
+    dataIndex: "name",
+    key: "name",
   },
   {
     title: "O‘tkazilgan profilaktikalar soni",
-    dataIndex: "clear_cases_count",
-    key: "clear_cases_count",
+    dataIndex: "total_profilaktika",
+    key: "total_profilaktika",
   },
 
   {
     title: "Seminar",
-    dataIndex: "rejected_count",
-    key: "rejected_count",
+    dataIndex: "seminar",
+    key: "seminar",
   },
   {
     title: "Ommaviy muhokamalar",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "public_discussions",
+    key: "public_discussions",
   },
   {
     title: "OAVda chiqishlar",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "media_appearances",
+    key: "media_appearances",
   },
   {
     title: "Ochiq eshiklar kuni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "open_houses",
+    key: "open_houses",
   },
   {
     title: "Tarqatma materiallarni tarqati",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "distributing_materials",
+    key: "distributing_materials",
   },
   {
     title: "Qo‘llanma, tavsiya va boshqa xatlar yuborish",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "sending_guidelines",
+    key: "sending_guidelines",
   },
 ];
 
 const Index = () => {
   const currentYear = dayjs().year();
 
-  const [dataSource, setDataSource] = useState<IStatusBuCategory[]>([]);
+  const [dataSource, setDataSource] = useState<
+    IActionTakenByProfilatikaByOrganization[] & INNANDNAME[]
+  >([]);
 
   const [searchText, setSearchText] = useState("");
   const [quarter, setQuarter] = useState<number>();
@@ -84,21 +90,21 @@ const Index = () => {
   };
 
   const { isLoading } = useQuery(
-    ["case-status-by-category", searchValue, year, quarter],
+    ["action-taken-by-profilatika-by-organization", searchValue, year, quarter],
     () =>
-      axiosT.get<{ categories: IStatusBuCategory[] }>(
-        `/reports/case-status-by-category/`,
+      axiosT.get<IActionTakenByProfilatikaByOrganization[] & INNANDNAME[]>(
+        `/reports/report-by-profilaktika/`,
         {
           params: {
             year: year,
-            search: searchValue,
-            quarter: quarter,
+            // search: searchValue,
+            // quarter: quarter,
           },
         }
       ),
     {
       onSuccess({ data }) {
-        setDataSource(data.categories);
+        setDataSource(data);
       },
     }
   );
@@ -165,7 +171,7 @@ const Index = () => {
 
       <div ref={contentRef}>
         <Table
-          dataSource={[]}
+          dataSource={dataSource}
           columns={columns}
           loading={isLoading}
           locale={{

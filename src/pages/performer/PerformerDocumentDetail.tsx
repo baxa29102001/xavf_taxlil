@@ -3,6 +3,10 @@ import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
 import { ElliminationModal } from "@/components/common/ElliminationModal";
 import { FileCreateModal } from "@/components/common/FileCreateModal";
+import {
+  ShowFilesByCategories,
+  filesProp,
+} from "@/components/common/ShowFilesByCategories";
 import { ROLES } from "@/constants/enum";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
 import {
@@ -93,6 +97,13 @@ const statusOptions: any = {
 
 const { TextArea } = Input;
 
+type filesType = {
+  file_type: filesProp[];
+  files: filesProp[];
+  measure_type: filesProp[];
+  removed_type: filesProp[];
+};
+
 const PerformerDocumentDetail = () => {
   const [searchParams] = useSearchParams();
   const [contentData, setContentData] = useState<any>();
@@ -125,9 +136,19 @@ const PerformerDocumentDetail = () => {
 
   const [cancelCommentModal, setCancelCommentModal] = useState(false);
   const [form] = Form.useForm();
-  const [isModalOpen, setIsModalOpen] = useState<any>({
+  const [isModalOpen, setIsModalOpen] = useState<{
+    modal: boolean;
+    item: any;
+  }>({
     modal: false,
     item: {},
+  });
+
+  const [files, setFiles] = useState<filesType>({
+    file_type: [],
+    files: [],
+    measure_type: [],
+    removed_type: [],
   });
 
   const { refetch } = useQuery(
@@ -168,7 +189,7 @@ const PerformerDocumentDetail = () => {
             </button>
           ),
 
-          edit: (
+          edit: config?.role === ROLES.IJROCHI && (
             <>
               {data.status === "Tasdiqlandi" && (
                 <div className="flex items-center gap-3">
@@ -279,6 +300,8 @@ const PerformerDocumentDetail = () => {
           content: "Muaffaqiyatli yaratildi",
         });
 
+        navigate(`/${config.mainUrl}/documents?status=Bartaraf qilingan`);
+
         setIsClearCrieteraModal({
           modal: false,
           item: {},
@@ -297,6 +320,17 @@ const PerformerDocumentDetail = () => {
         });
       });
   };
+
+  useQuery(
+    ["scoreHistoryFiles", isModalOpen.modal],
+    () => axiosT.get(`/scores/cases/all/${id}/`),
+    {
+      enabled: isModalOpen.modal,
+      onSuccess({ data }) {
+        setFiles(data);
+      },
+    }
+  );
 
   return (
     <div className="px-4 py-5">
@@ -387,36 +421,22 @@ const PerformerDocumentDetail = () => {
             </button>
           </div>
         )}
-      <Modal
-        title={isModalOpen.item.criteria}
-        open={isModalOpen.modal}
-        footer={null}
-        onCancel={() => {
+
+      <ShowFilesByCategories
+        files={{
+          file_type: files.file_type,
+          measure_type: files.measure_type,
+          removed_type: files.removed_type,
+          files: files.files,
+        }}
+        isModalOpen={isModalOpen.modal}
+        setIsModalOpen={() => {
           setIsModalOpen({
             modal: false,
             item: {},
           });
         }}
-      >
-        <div className="mt-6">
-          {isModalOpen?.item?.files?.map((file: any, index: number) => {
-            return (
-              <div className="flex items-center justify-between">
-                <p>
-                  {index + 1}. {isModalOpen?.item.date}
-                </p>
-
-                <a href={file?.file_url} target="_blank">
-                  <div className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer ">
-                    <FileIcon />
-                    Fayl
-                  </div>
-                </a>
-              </div>
-            );
-          })}
-        </div>
-      </Modal>
+      />
       <Modal
         title={"Rad etish"}
         open={cancelCommentModal}

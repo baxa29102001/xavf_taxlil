@@ -3,7 +3,10 @@ import AuthContext from "@/context/authContext";
 import { useContext } from "react";
 
 const RolesPermissions = (role: ROLES) => {
-  const arr = [
+  const arr: {
+    mainUrl: string;
+    role: ROLES;
+  }[] = [
     {
       mainUrl: "performer",
       role: ROLES.IJROCHI,
@@ -20,7 +23,13 @@ const RolesPermissions = (role: ROLES) => {
 
   return arr.find((item) => item.role === role);
 };
-export const useDetectRoles = () => {
+export const useDetectRoles = (): {
+  userDetails: any;
+  config: {
+    mainUrl: string;
+    role: ROLES;
+  };
+} => {
   const { userDetails } = useContext(AuthContext);
   const config: any = RolesPermissions(userDetails?.role);
 

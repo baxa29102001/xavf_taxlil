@@ -5,6 +5,7 @@ import { FC, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import PageTitle from "@/components/common/PageTitle";
+import Search from "antd/es/input/Search";
 
 const columns = [
   {
@@ -80,15 +81,20 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
   const [query] = useSearchParams();
   const navigate = useNavigate();
   const { id } = useParams();
-
+  const [searchText, setSearchText] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
+  const [activePage, setActivePage] = useState(1);
   const { config } = useDetectRoles();
 
   useQuery(
-    ["organizationList", id],
+    ["organizationList", id, searchText, activePage],
     () =>
       axiosT.get("/organizations/list/", {
         params: {
           category_id: id,
+          search: searchText,
+          page_size: 10,
+          page: activePage,
         },
       }),
     {
@@ -128,16 +134,27 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
             </button>
           ),
         }));
-
+        setTotalCount(data.count);
         setOrganizationList(arr);
       },
     }
   );
 
+  const onSearchChange = (
+    text: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setSearchText(text.target.value);
+  };
   return (
     <div className="px-4 py-5">
       <PageTitle title={`${query.get("category_name")}`} back />
-
+      <div className="flex items-center gap-2 mb-8">
+        <Search
+          placeholder="Tashkilot nomi"
+          onChange={(value) => onSearchChange(value)}
+          className="flex-1"
+        />
+      </div>
       <div className="bg-white rounded-2xl p-3">
         <Table
           dataSource={organizationList}
@@ -145,6 +162,13 @@ export const OrganizationsList: FC<OrganizationsListProps> = ({
           rowHoverable={false}
           rowClassName={(item: any) => {
             return `${item.color} cursor-pointer`;
+          }}
+          pagination={{
+            pageSize: 10,
+            total: totalCount,
+            onChange(page: number) {
+              setActivePage(page);
+            },
           }}
         />
       </div>

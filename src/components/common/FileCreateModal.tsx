@@ -128,7 +128,7 @@ export const FileCreateModal: FC<FileCreateModalProps> = ({
                     <Form.Item
                       label="Tavsiflar"
                       className="col-span-2"
-                      name={["files", index, "description"]}
+                      name={["files", index, "descriptions"]}
                     >
                       <TextArea />
                     </Form.Item>
