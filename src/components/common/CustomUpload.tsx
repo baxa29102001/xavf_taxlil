@@ -27,7 +27,8 @@ export const CustomUpload: React.FC<CustomUploadProps> = ({
       onSuccess("ok");
     },
     onChange: handleChange,
-    multiple: multiple,
+    multiple: false,
+    maxCount: 1,
     fileList,
   };
 

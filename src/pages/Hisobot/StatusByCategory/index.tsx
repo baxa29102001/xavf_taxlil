@@ -126,11 +126,11 @@ const Index = () => {
 
       <div className={"grid grid-cols-12 gap-4 mb-5"}>
         <div className="col-span-6">
-          <Search
+          {/* <Search
             placeholder="Tashkilot nomi"
             onChange={(value) => onSearchChange(value)}
             className="max-w-[300px]"
-          />
+          /> */}
         </div>
         <div className="col-span-6 flex justify-end">
           <Space>

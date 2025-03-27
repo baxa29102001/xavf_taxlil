@@ -16,18 +16,24 @@ const Index = () => {
     return (
         <div className={'grid grid-cols-12 gap-4'}>
             {
-                HISOBOT_LIST[userDetails.role as keyof typeof HISOBOT_LIST].map((item: {label: string, value: string}) => {
-                    return(
+                HISOBOT_LIST[userDetails.role as keyof typeof HISOBOT_LIST].map((item: {label: string, value: string},index:number) => {
+                    return (
+                      <div
+                        className={"col-span-4"}
+                        key={item.value}
+                        onClick={() =>
+                          navigate(`/${roleRoute}/hisobot/${item.value}`)
+                        }
+                      >
                         <div
-                            className={'col-span-4'}
-                            key={item.value}
-                            onClick={()=>navigate(`/${roleRoute}/hisobot/${item.value}`)}
+                          className={
+                            "bg-white p-5 rounded-[15px] h-full text-[#10384F] cursor-pointer"
+                          }
                         >
-                            <div className={'bg-white p-5 rounded-[15px] h-full text-[#10384F] cursor-pointer'}>
-                                {item.label}
-                            </div>
+                          <span className='font-semibold'>{index + 1}.</span> {item.label}
                         </div>
-                    )
+                      </div>
+                    );
                 })
             }
         </div>

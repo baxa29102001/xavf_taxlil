@@ -47,6 +47,7 @@ const Index = () => {
       axiosT.get<{ id: number; name: string }[]>(`organizations/select/`, {
         params: {
           category_id: categoryId,
+          has_score: true,
         },
       }),
     {
@@ -132,7 +133,7 @@ const Index = () => {
         <div className="col-span-6">
           <PageTitle
             title={
-              "Axborotlashtirish, raqamli texnologiyalar, elektron xizmatlar va raqamli servislar, axborot xavfsizligi  faoliyatida 2025-yil 1-chorak davomida o‘tkazilgan xavf tahlilining kriterilar bo‘yicha natijalari"
+              "Xavf tahlili baholash ko‘rsatgichlarining hududlar kesimida"
             }
             back
           />
@@ -162,11 +163,11 @@ const Index = () => {
 
       <div className={"grid grid-cols-12 gap-4 mb-5"}>
         <div className="col-span-6">
-          <Search
+          {/* <Search
             placeholder="Tashkilot nomi"
             onChange={(value) => onSearchChange(value)}
             className="max-w-[300px]"
-          />
+          /> */}
         </div>
         <div className="col-span-6 flex justify-end">
           <Space>

@@ -111,7 +111,7 @@ export const TopEntitesStatics = () => {
               },
             ]}
           />{" "}
-          <Select
+          {/* <Select
             placeholder="Chorak"
             style={{
               width: 150,
@@ -127,7 +127,7 @@ export const TopEntitesStatics = () => {
                 label: "2-chorak",
               },
             ]}
-          />
+          /> */}
         </div>
       </div>
 

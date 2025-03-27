@@ -57,7 +57,13 @@ const EntityCriteriaDetail = () => {
           };
         })}
       /> */}
-
+      {actions?.cases?.length === 0 && (
+        <div className="flex items-center justify-center mt-4">
+          <p className="text-lg font-semibold">
+            Bu riteriya bo'yicha ma'lumot topilmadi
+          </p>
+        </div>
+      )}
       <div className="grid grid-cols-3 gap-6">
         {actions?.cases?.map((criteria: any) => {
           return (
@@ -81,7 +87,12 @@ const EntityCriteriaDetail = () => {
                   }}
                   className="text-lg font-semibold"
                 >
-                  <span> { criteria.removed ? criteria.removed_score : criteria.added_score}</span>
+                  <span>
+                    {" "}
+                    {criteria.removed
+                      ? criteria.removed_score
+                      : criteria.added_score}
+                  </span>
                 </p>
               </div>
               <hr className="my-2 border-black/30" />
@@ -106,6 +117,13 @@ const EntityCriteriaDetail = () => {
                 <p className="">Masul shaxs</p>
                 <p className="text-lg font-semibold">
                   {criteria?.approved_by?.name || "-"}
+                </p>
+              </div>{" "}
+              <hr className="my-2 border-black/30" />
+              <div className="flex items-center justify-between">
+                <p className="">Izoh</p>
+                <p className="text-lg font-semibold">
+                  {criteria?.files[0]?.description || "-"}
                 </p>
               </div>
             </div>

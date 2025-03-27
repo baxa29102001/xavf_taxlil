@@ -23,16 +23,16 @@ const columns = [
     key: "category",
   },
 
-  {
-    title: "Tekshirishlar soni",
-    dataIndex: "examinations",
-    key: "examinations",
-  },
-  {
-    title: "Profilaktikalar soni",
-    dataIndex: "profilaktika",
-    key: "profilaktika",
-  },
+  // {
+  //   title: "Tekshirishlar soni",
+  //   dataIndex: "examinations",
+  //   key: "examinations",
+  // },
+  // {
+  //   title: "Profilaktikalar soni",
+  //   dataIndex: "profilaktika",
+  //   key: "profilaktika",
+  // },
   {
     title: "Chiqarilgan ko‘rsatmalar soni",
     dataIndex: "instructions",

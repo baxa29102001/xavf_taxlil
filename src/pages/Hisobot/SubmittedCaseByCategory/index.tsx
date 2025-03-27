@@ -70,12 +70,15 @@ const Index = () => {
   // get Masul
   const { isLoading: isLoadingMasul } = useQuery(
     ["masul-select"],
-    () => axiosT.get<{ id: number; name: string }[]>(`account/masul/`),
+    () =>
+      axiosT.get<{ id: number; first_name: string; last_name: string }[]>(
+        `account/masul/`
+      ),
     {
       onSuccess({ data }) {
         const formated = data.map((item) => {
           return {
-            label: item.name,
+            label: item.first_name + " " + item.last_name,
             value: item.id,
           };
         });

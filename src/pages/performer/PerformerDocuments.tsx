@@ -19,7 +19,7 @@ const btns = [
   {
     value: "",
     label: "Barchasi",
-    count: "",
+    count: "0",
   },
   {
     value: "Yangi",
@@ -49,7 +49,7 @@ const btns = [
     value: "Bartaraf qilingan",
     label: "Bartaraf qilish uchun sorov",
     count: "0",
-    id: "Bartaraf qilingan",
+    id: "Bartaraf qilish uchun so'rov",
   },
 ];
 
@@ -191,7 +191,7 @@ const PerformerDocuments = () => {
           category_id: activeCategory,
           search: searchText,
           page: activePage,
-          removed: activeBtn === "Bartaraf qilingan" ? true : undefined,
+          removed: false,
         },
       }),
     {
@@ -318,7 +318,6 @@ const PerformerDocuments = () => {
       });
       refetchRemovedScores();
     } catch (error) {
-      console.error("Error approving request:", error);
       messageApi.open({
         type: "error",
         content: "Xatolik yuz berdi",
@@ -383,7 +382,7 @@ const PerformerDocuments = () => {
             }}
           >
             {btn.label}
-            {![undefined, 0].includes(btn.count) && (
+            {![undefined, 0, "0"].includes(btn.count) && (
               <span className="bg-red-600 rounded-full text-center text-white w-5 h-5 text-[10px] flex items-center justify-center">
                 {btn.count}
               </span>
@@ -399,13 +398,13 @@ const PerformerDocuments = () => {
           className="flex-1"
         />
         <RangePicker className="flex-1" placeholder={["dan", "gacha"]} />
-        <Select
+        {/* <Select
           allowClear
           onChange={() => {}}
           placeholder="Men tomondan kiritilgan"
           className="flex-1"
           options={[]}
-        />
+        /> */}
         <Select
           allowClear
           onChange={(data: any) => {

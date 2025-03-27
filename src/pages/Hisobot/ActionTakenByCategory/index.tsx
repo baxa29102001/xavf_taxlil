@@ -28,11 +28,11 @@ const columns = [
     key: "inn",
   },
 
-  {
-    title: "Tekshirishlar soni",
-    dataIndex: "examinations_count",
-    key: "examinations_count",
-  },
+  // {
+  //   title: "Tekshirishlar soni",
+  //   dataIndex: "examinations_count",
+  //   key: "examinations_count",
+  // },
 
   {
     title: "Chiqarilgan ko‘rsatmalar soni",
