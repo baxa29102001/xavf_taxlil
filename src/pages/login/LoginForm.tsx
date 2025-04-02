@@ -47,7 +47,7 @@ const LoginForm = () => {
   const backHandler = () => {
     localStorage?.clear();
     userdetails.setUserHandler(null);
-    userdetails.setStepHandler(1);
+
     navigate("/general");
   };
 
@@ -55,13 +55,21 @@ const LoginForm = () => {
     <>
       <div className="flex items-center">
         <div className="bg-[#1C5196] px-[62px] py-[81px] h-screen">
-          <div className="">
+          <div className="flex flex-col justify-between items-center">
             <h2 className="text-[32px] text-white text-center w-[525px] mb-20 Monstreat">
               “OʻZKOMNAZORAT” INSPEKSIYASI
             </h2>
-            <div className="flex items-end  justify-center">
+            <div className="flex items-end  justify-center mb-30">
               <img src={"/logo.svg"} alt="" className="w-[400px] h-[500px]" />
             </div>
+
+            <p className="text-white font-medium">
+              Axborot tizimi{" "}
+              <span className="text-lg font-bold text-[#45A57D]">
+                <a href="http://technocorp.uz/">Technocorp</a>
+              </span>{" "}
+              tomonidan ishlab chiqilgan
+            </p>
           </div>
         </div>
         <div className="flex w-full items-center justify-center">
