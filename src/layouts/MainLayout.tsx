@@ -9,7 +9,7 @@ import {
 import { Button, Dropdown, Layout, Space, theme } from "antd";
 import React, { useCallback, useContext, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-const { Header, Content } = Layout;
+const { Header, Content, Footer } = Layout;
 
 export const MainLayout = React.memo(() => {
   const [collapsed, setCollapsed] = useState(false);
@@ -91,6 +91,21 @@ export const MainLayout = React.memo(() => {
         >
           <Outlet />
         </Content>
+
+        {/* <Footer style={{ textAlign: "center" }}>
+          <p className="text-black font-medium">
+            Axborot tizimi
+            <span
+              className="text-lg font-bold margin-x-2 text-[#45A57D]"
+              style={{
+                color: "#45A57D !important",
+              }}
+            >
+              <a href="http://technocorp.uz/">Technocorp</a>
+            </span>{" "}
+            tomonidan ishlab chiqilgan
+          </p>
+        </Footer> */}
       </Layout>
     </Layout>
   );

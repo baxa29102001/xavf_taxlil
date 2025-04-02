@@ -1,5 +1,6 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
+import { BartarafEtishModal } from "@/components/common/BartarafEtishModal";
 import { CustomUpload } from "@/components/common/CustomUpload";
 import { ElliminationModal } from "@/components/common/ElliminationModal";
 import { FileCreateModal } from "@/components/common/FileCreateModal";
@@ -496,7 +497,7 @@ const PerformerDocumentDetail = () => {
           });
         }}
       />
-      <Modal
+      {/* <Modal
         title={isClearCrieteraModal.item.criteria}
         open={isClearCrieteraModal.modal}
         onOk={() => {}}
@@ -532,7 +533,18 @@ const PerformerDocumentDetail = () => {
             </Form.Item>
           </Form>
         </div>
-      </Modal>
+      </Modal> */}
+
+      <BartarafEtishModal
+        open={isClearCrieteraModal.modal}
+        data={isClearCrieteraModal.item}
+        closeHandler={() => {
+          setIsClearCrieteraModal({
+            modal: false,
+            item: {},
+          });
+        }}
+      />
     </div>
   );
 };

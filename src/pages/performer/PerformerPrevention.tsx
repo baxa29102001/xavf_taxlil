@@ -4,13 +4,16 @@ import { CustomUpload } from "@/components/common/CustomUpload";
 import { ROLES } from "@/constants/enum";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { getQuarter } from "@/utils/quater";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
+  Card,
   DatePicker,
   Form,
   Input,
   Modal,
   Select,
+  Space,
   Table,
   message,
 } from "antd";
@@ -93,6 +96,16 @@ const PerformerPrevention = () => {
 
   const [newPreventionModal, setNewPreventionModal] = useState(false);
   const [categories, setCategories] = useState([]);
+
+  const [files, setFiles] = useState([{ id: 1 }]);
+
+  const addFile = () => {
+    setFiles([...files, { id: Date.now() }]);
+  };
+
+  const removeFile = (id: number) => {
+    setFiles(files.filter((file) => file.id !== id));
+  };
 
   useQuery(
     ["categoriesEntites"],
@@ -338,19 +351,43 @@ const PerformerPrevention = () => {
                     },
                   ]}
                 />
-              </Form.Item>{" "}
-              <Form.Item label="Fayl" name={"file"}>
-                <CustomUpload multiple />
               </Form.Item>
-              <Form.Item
-                label="Tavsiflar"
-                className="col-span-2"
-                rules={[{ required: true, message: "Majburiy maydon" }]}
-                name={"description"}
-              >
-                <TextArea />
-              </Form.Item>
+              {files.map((file: any, index: number) => (
+                <Card key={file.id} style={{ marginBottom: 10 }}>
+                  <Space direction="vertical">
+                    <Form.Item label="Fayl" name={"file"}>
+                      <CustomUpload multiple />
+                    </Form.Item>
+                    <Form.Item
+                      label="Tavsiflar"
+                      className="col-span-2"
+                      rules={[{ required: true, message: "Majburiy maydon" }]}
+                      name={"description"}
+                    >
+                      <TextArea />
+                    </Form.Item>
+
+                    {files.length > 1 && (
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => removeFile(file.id)}
+                      >
+                        O'chirish
+                      </Button>
+                    )}
+                  </Space>
+                </Card>
+              ))}
             </div>
+            <Button
+              type="dashed"
+              onClick={addFile}
+              icon={<PlusOutlined />}
+              block
+            >
+              Yangi fayl qo‘shish
+            </Button>
             <Form.Item label={null}>
               <Button type="primary" htmlType="submit" loading={loading}>
                 Yuborish

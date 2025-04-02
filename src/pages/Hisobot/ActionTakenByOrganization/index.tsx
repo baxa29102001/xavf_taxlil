@@ -1,18 +1,13 @@
 import { useQuery } from "react-query";
 import axiosT from "@/api/axios.ts";
-import {
-  IActionTakenByMainCategory,
-  IStatusBuCategory,
-} from "@/Interface/IHisobot.ts";
-import { Button, DatePicker, Input, Select, Space, Table } from "antd";
+import { IActionTakenByMainCategory } from "@/Interface/IHisobot.ts";
+import { Input, Table } from "antd";
 import { useState } from "react";
 import useDebouncedValue from "@/hooks/use-debounced-value.tsx";
 import dayjs from "dayjs";
 import PageTitle from "@/components/common/PageTitle";
-import { PrinterOutlined } from "@ant-design/icons";
 import { useReactToPrint } from "react-to-print";
 import { useRef } from "react";
-import { QuarterList } from "@/constants/share.tsx";
 
 const { Search } = Input;
 
