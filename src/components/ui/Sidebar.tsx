@@ -134,38 +134,46 @@ export const Sidebar: FC<SidebarProps> = React.memo(({ collapsed }) => {
     }
   );
 
-  console.log("rendering sidebar");
-
   return (
-    <Sider
-      trigger={null}
-      collapsible
-      collapsed={collapsed}
-      className="h-screen px-4 "
-      width={"304px"}
-      style={{
-        position: "sticky",
-        top: "0",
-      }}
-    >
-      <Link to={"/"}>
-        <div className="flex items-center gap-2 py-10 px-2">
-          <img src="/logo.svg" />
-          {!collapsed && (
-            <h2 className="text-white">“OʻZKOMNAZORAT” INSPEKSIYASI</h2>
-          )}{" "}
-        </div>
-      </Link>
-      <Menu
-        theme="dark"
-        mode="inline"
-        defaultSelectedKeys={[matchUrl.pathname.split("/")[2] || ""]}
-        items={getRoutesForRole(userDetails.role, notifactionCount)}
-        onClick={(item) => {
-          navigate(item.key);
+    <>
+      <Sider
+        trigger={null}
+        collapsible
+        collapsed={collapsed}
+        className="h-screen px-4"
+        width={"304px"}
+        style={{
+          position: "sticky",
+          top: "0",
         }}
-        style={{}}
-      />
-    </Sider>
+      >
+        <Link to={"/"}>
+          <div className="flex items-center gap-2 py-10 px-2">
+            <img src="/logo.svg" />
+            {!collapsed && (
+              <h2 className="text-white">“OʻZKOMNAZORAT” INSPEKSIYASI</h2>
+            )}{" "}
+          </div>
+        </Link>
+        <Menu
+          theme="dark"
+          mode="inline"
+          defaultSelectedKeys={[matchUrl.pathname.split("/")[2] || ""]}
+          items={getRoutesForRole(userDetails.role, notifactionCount)}
+          onClick={(item) => {
+            navigate(item.key);
+          }}
+          style={{}}
+        />
+
+        <p className="text-white text-center px-2 font-medium mt-[334px]">
+          Axborot tizimi{" "}
+          <span className="text-lg font-bold greenImportantColor">
+            <a href="http://technocorp.uz/">Technocorp</a>
+          </span>{" "}
+          tomonidan ishlab chiqilgan
+        </p>
+      </Sider>
+    </>
   );
 });

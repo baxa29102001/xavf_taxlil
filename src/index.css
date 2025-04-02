@@ -6,7 +6,7 @@
   font-family: "Montserrat", sans-serif;
 }
 
-.ant-menu-submenu-title {
+/* .ant-menu-submenu-title {
   color: "#fff";
 }
 .ant-menu-submenu-open .ant-menu-submenu-title,
@@ -17,4 +17,8 @@
 .ant-menu-submenu-title:hover {
   background-color: #fff !important;
   color: #10384f !important;
+} */
+
+.greenImportantColor {
+  color: #45a57d !important;
 }
