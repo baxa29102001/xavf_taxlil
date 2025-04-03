@@ -11,6 +11,7 @@ export type filesProp = {
   description: string;
   comment?: string;
   created_at?: string;
+  rejected_at?: string;
   file_type: FileExactTypes;
 };
 
@@ -22,16 +23,19 @@ interface ShowFilesByCategoriesProps {
     files: filesProp[];
     measure_type: filesProp[];
     removed_type: filesProp[];
+    rejection_history?: filesProp[];
   };
 }
 
 export const FilesBlock = ({
   files,
   title,
+  hideFile,
   extraField,
 }: {
   title: string;
   files: filesProp[];
+  hideFile?: boolean;
   extraField?: (data: filesProp) => JSX.Element;
 }) => {
   return (
@@ -47,7 +51,7 @@ export const FilesBlock = ({
                 <div>
                   <p>
                     <span className="font-semibold">Sana: </span>
-                    {item.created_at}
+                    {item.created_at || item.rejected_at}
                   </p>
                   <p className="flex items-center gap-1 w-full" style={{}}>
                     <span className="font-semibold">Izoh:</span>
@@ -59,13 +63,14 @@ export const FilesBlock = ({
                   {extraField && extraField(item)}
                 </div>
               </div>
-
-              <a href={item.file_url} target="_blank">
-                <div className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer ">
-                  <FileIcon />
-                  Fayl
-                </div>
-              </a>
+              {!hideFile && (
+                <a href={item.file_url} target="_blank">
+                  <div className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer ">
+                    <FileIcon />
+                    Fayl
+                  </div>
+                </a>
+              )}
             </div>
           </div>
         ))}
@@ -91,7 +96,7 @@ export const ShowFilesByCategories: FC<ShowFilesByCategoriesProps> = ({
       onCancel={() => {
         setIsModalOpen();
       }}
-      width={"80%"}
+      width={"100%"}
     >
       <div className="mt-6 grid grid-cols-2 gap-3">
         <FilesBlock title="Fayl biriktirlishi" files={files.files} />
@@ -129,7 +134,8 @@ export const ShowFilesByCategories: FC<ShowFilesByCategoriesProps> = ({
         />{" "}
         <FilesBlock
           title="Rad etilish izohi"
-          files={[]}
+          files={files.rejection_history || []}
+          hideFile
         />
       </div>
     </Modal>

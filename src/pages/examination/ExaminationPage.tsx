@@ -2,6 +2,7 @@ import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
 import { ShoWUploadedFilesWithComments } from "@/components/common/ShowUploadedFileWithComments";
+import { CreateResultForExamination } from "@/components/pages/examination/CreateResultForExamination";
 import { ROLES } from "@/constants/enum";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { getQuarter } from "@/utils/quater";
@@ -114,6 +115,10 @@ const ExaminationPage = () => {
   const [newPreventionModal, setNewPreventionModal] = useState(false);
   const [categories, setCategories] = useState([]);
   const [showFileModal, setShowFileModal] = useState(false);
+  const [resultModal, setResultModal] = useState({
+    modal: false,
+    item: {},
+  });
   const [activeFiles, setActiveFile] = useState([]);
 
   const [files, setFiles] = useState([{ id: 1 }]);
@@ -150,16 +155,6 @@ const ExaminationPage = () => {
               ))}
             </>
           ),
-          // edit: (
-          //   <button
-          //     className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
-          //     onClick={() => {
-          //       navigate("/examination/" + item.id);
-          //     }}
-          //   >
-          //     Batafsil
-          //   </button>
-          // ),
 
           file: (
             <button
@@ -171,6 +166,20 @@ const ExaminationPage = () => {
             >
               <FileIcon />
               Fayl
+            </button>
+          ),
+
+          edit: (
+            <button
+              className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
+              onClick={() => {
+                setResultModal({
+                  modal: true,
+                  item: item,
+                });
+              }}
+            >
+              Natijani kiritish
             </button>
           ),
         }));
@@ -403,24 +412,7 @@ const ExaminationPage = () => {
                 <Select
                   disabled={!organization_id}
                   placeholder="Tanlash"
-                  // options={inspectors.map((item: any) => ({
-                  //   value: item.id,
-                  //   label: item.full_name,
-                  // }))}
                   mode="multiple"
-                  // tagRender={(props) => {
-                  //   const { label, value, onClose } = props;
-                  //   return (
-                  //     <Tag
-                  //       color="blue"
-                  //       closable
-                  //       onClose={onClose}
-                  //       style={{ marginRight: 3 }}
-                  //     >
-                  //       {label}
-                  //     </Tag>
-                  //   );
-                  // }}
                   dropdownRender={(menu) => {
                     return (
                       <>
@@ -539,6 +531,14 @@ const ExaminationPage = () => {
           setShowFileModal(false);
         }}
         files={activeFiles}
+      />
+
+      <CreateResultForExamination
+        criteria={resultModal.item}
+        modalOpen={resultModal.modal}
+        setModalOpen={() => {
+          setResultModal({ item: {}, modal: false });
+        }}
       />
     </div>
   );

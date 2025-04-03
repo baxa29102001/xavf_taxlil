@@ -126,6 +126,7 @@ type filesType = {
   file_type: filesProp[];
   files: filesProp[];
   measure_type: filesProp[];
+  rejection_history?: filesProp[];
   removed_type: filesProp[];
 };
 
@@ -159,6 +160,7 @@ const PerformerDocuments = () => {
     files: [],
     measure_type: [],
     removed_type: [],
+    rejection_history: [],
   });
 
   useQuery(["categories"], () => axiosT.get("/organizations/categories/"), {
@@ -457,6 +459,7 @@ const PerformerDocuments = () => {
           measure_type: files.measure_type,
           removed_type: files.removed_type,
           files: files.files,
+          rejection_history: files.rejection_history,
         }}
         isModalOpen={isModalOpen.modal}
         setIsModalOpen={() => {

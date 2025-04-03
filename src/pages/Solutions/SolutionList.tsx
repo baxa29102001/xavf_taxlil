@@ -1,6 +1,9 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
-import { ShowFilesByCategories, filesProp } from "@/components/common/ShowFilesByCategories";
+import {
+  ShowFilesByCategories,
+  filesProp,
+} from "@/components/common/ShowFilesByCategories";
 import { Table, TableColumnsType } from "antd";
 import { useState } from "react";
 import { useQuery } from "react-query";
@@ -72,6 +75,7 @@ type filesType = {
   files: filesProp[];
   measure_type: filesProp[];
   removed_type: filesProp[];
+  rejection_history?: filesProp[];
 };
 const SolutionList = () => {
   const [activeBtn, setActiveBtn] = useState("file_type=1");
@@ -90,6 +94,7 @@ const SolutionList = () => {
     files: [],
     measure_type: [],
     removed_type: [],
+    rejection_history: [],
   });
 
   const [documentsData, setDocumentsData] = useState([]);
@@ -213,6 +218,7 @@ const SolutionList = () => {
           measure_type: files.measure_type,
           removed_type: files.removed_type,
           files: files.files,
+          rejection_history: files.rejection_history,
         }}
         isModalOpen={isModalOpen.modal}
         setIsModalOpen={() => {
