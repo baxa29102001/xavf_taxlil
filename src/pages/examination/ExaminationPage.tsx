@@ -1,6 +1,7 @@
 import axiosT from "@/api/axios";
 import { FileIcon } from "@/assets/icons";
 import { CustomUpload } from "@/components/common/CustomUpload";
+import { ShoWUploadedFilesWithComments } from "@/components/common/ShowUploadedFileWithComments";
 import { ROLES } from "@/constants/enum";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
 import { getQuarter } from "@/utils/quater";
@@ -19,6 +20,7 @@ import {
   message,
 } from "antd";
 import { useEffect, useState } from "react";
+import { set } from "react-hook-form";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -44,26 +46,25 @@ const columns = [
   //   key: "last_profilaktika_date",
   // },
   {
-    title: "Muddat",
+    title: "Boshlangan sanasi",
     dataIndex: "start_date",
     key: "start_date",
   },
   {
-    title: "Tavsif",
-    dataIndex: "description",
-    key: "description",
-  },
-
-  {
-    title: "Fayl",
-    dataIndex: "file",
-    key: "file",
+    title: "Tugash sanasi",
+    dataIndex: "end_date",
+    key: "end_date",
   },
 
   {
     title: "Inspektor",
     dataIndex: "inspector",
     key: "inspector",
+  },
+  {
+    title: "Fayl",
+    dataIndex: "file",
+    key: "file",
   },
 
   {
@@ -107,10 +108,13 @@ const ExaminationPage = () => {
     type: undefined,
   });
 
+  const [loading, setLoading] = useState(false);
   const { config } = useDetectRoles();
 
   const [newPreventionModal, setNewPreventionModal] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [showFileModal, setShowFileModal] = useState(false);
+  const [activeFiles, setActiveFile] = useState([]);
 
   const [files, setFiles] = useState([{ id: 1 }]);
 
@@ -139,7 +143,13 @@ const ExaminationPage = () => {
         const arr = data.map((item: any, index: number) => ({
           ...item,
           index: index + 1,
-          inspector: item?.inspector?.full_name,
+          inspector: (
+            <>
+              {item?.inspector.map((item: any) => (
+                <p>{item.full_name}</p>
+              ))}
+            </>
+          ),
           // edit: (
           //   <button
           //     className="text-[#4E75FF] bg-white px-6 py-2 border border-[#4E75FF] rounded-md cursor-pointer"
@@ -152,14 +162,16 @@ const ExaminationPage = () => {
           // ),
 
           file: (
-            <a
+            <button
               className="py-2 px-3 flex   items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer"
-              href={item.file}
-              target="_blank"
+              onClick={() => {
+                setShowFileModal(true);
+                setActiveFile(item.files);
+              }}
             >
               <FileIcon />
               Fayl
-            </a>
+            </button>
           ),
         }));
 
@@ -205,6 +217,7 @@ const ExaminationPage = () => {
   );
 
   const onFinish = (dataPayload: any) => {
+    setLoading(true);
     const data = {
       ...dataPayload,
       start_date: dataPayload?.start_date?.format("YYYY-MM-DD"),
@@ -212,14 +225,18 @@ const ExaminationPage = () => {
     };
     const formData = new FormData();
     Object.keys(data).forEach((item: any) => {
-      if (item === "file") return;
+      if (item === "files") return;
       if (item === "inspector") return;
       formData.append(item, data[item]);
     });
 
-    data.file.forEach((item: any) => {
-      delete item.originFileObj.uid;
-      formData.append("file", item.originFileObj);
+    const filesList = dataPayload.files;
+
+    filesList.forEach((item: any) => {
+      const file = item.files[0].originFileObj;
+      delete file.uid;
+      formData.append("files", file);
+      formData.append("comments", item.comments);
     });
     data.inspector.forEach((item: any) => {
       formData.append("inspector", item);
@@ -237,6 +254,9 @@ const ExaminationPage = () => {
       })
       .catch(() => {
         console.log("err");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -275,7 +295,7 @@ const ExaminationPage = () => {
         footer={null}
         onCancel={() => setNewPreventionModal(false)}
         onClose={() => setNewPreventionModal(false)}
-        width={"50%"}
+        width={"70%"}
       >
         <>
           <Form
@@ -463,17 +483,17 @@ const ExaminationPage = () => {
                   style={{ width: "100%" }}
                 />
               </Form.Item>
-              {files.map((file: any) => (
+              {files.map((file: any, index: number) => (
                 <Card key={file.id} style={{ marginBottom: 10 }}>
                   <Space direction="vertical">
-                    <Form.Item label="Fayl" name={"file"}>
+                    <Form.Item label="Fayl" name={["files", index, "files"]}>
                       <CustomUpload multiple />
                     </Form.Item>
                     <Form.Item
                       label="Tavsiflar"
                       className="col-span-2"
                       rules={[{ required: true, message: "Majburiy maydon" }]}
-                      name={"description"}
+                      name={["files", index, "comments"]}
                     >
                       <TextArea />
                     </Form.Item>
@@ -500,13 +520,26 @@ const ExaminationPage = () => {
               Yangi fayl qo‘shish
             </Button>
             <Form.Item label={null}>
-              <Button type="primary" htmlType="submit">
+              <Button
+                type="primary"
+                htmlType="submit"
+                className="mt-5"
+                loading={loading}
+              >
                 Yuborish
               </Button>
             </Form.Item>
           </Form>
         </>
       </Modal>
+
+      <ShoWUploadedFilesWithComments
+        isModalOpen={showFileModal}
+        setIsModalOpen={() => {
+          setShowFileModal(false);
+        }}
+        files={activeFiles}
+      />
     </div>
   );
 };

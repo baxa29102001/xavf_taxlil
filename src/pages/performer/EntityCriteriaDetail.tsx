@@ -1,5 +1,5 @@
 import axiosT from "@/api/axios";
-import { Divider, Timeline, message } from "antd";
+import { Card, Divider, Timeline, message } from "antd";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -35,9 +35,7 @@ const EntityCriteriaDetail = () => {
   return (
     <div className="px-4 py-5 bg-white">
       {contextHolder}
-
       <PageTitle title={`${actions?.criteria?.name}`} back />
-
       {/* <Timeline
         items={actions?.results?.map((item: any) => {
           return {
@@ -57,79 +55,165 @@ const EntityCriteriaDetail = () => {
           };
         })}
       /> */}
-      {actions?.cases?.length === 0 && (
-        <div className="flex items-center justify-center mt-4">
-          <p className="text-lg font-semibold">
-            Bu riteriya bo'yicha ma'lumot topilmadi
-          </p>
+      <Card>
+        <p className="font-bold mb-5 text-3xl ">Tasdiqlangan ballar</p>
+
+        {actions?.approved_cases?.length === 0 && (
+          <div className="flex items-center justify-center mt-4">
+            <p className="text-lg font-semibold">
+              Bu kriteriya bo'yicha ma'lumot topilmadi
+            </p>
+          </div>
+        )}
+        <div className="grid grid-cols-3 gap-6 ">
+          {actions?.approved_cases?.map((criteria: any) => {
+            return (
+              <div className="p-3 border border-black/30 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <p className="">Yaratilgan sana</p>
+                  <p className="text-lg font-semibold">
+                    {criteria?.created_at}
+                  </p>
+                </div>
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p
+                    style={{
+                      color: criteria.removed ? "red" : "green",
+                    }}
+                  >
+                    {criteria.removed ? "Bartaraf etilgan" : "Hisoblangan"} ball
+                  </p>
+                  <p
+                    style={{
+                      color: criteria.removed ? "red" : "green",
+                    }}
+                    className="text-lg font-semibold"
+                  >
+                    <span>
+                      {" "}
+                      {criteria.removed
+                        ? criteria.removed_score
+                        : criteria.added_score}
+                    </span>
+                  </p>
+                </div>
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p className="">Yuklangan fayl</p>
+                  <a href={criteria?.files[0]?.file} target="_blank">
+                    <div className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer ">
+                      <FileIcon />
+                      Fayl
+                    </div>
+                  </a>
+                </div>
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p className="">Ijrochi shaxs</p>
+                  <p className="text-lg font-semibold">
+                    {criteria?.created_by?.name || "-"}
+                  </p>
+                </div>
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p className="">Masul shaxs</p>
+                  <p className="text-lg font-semibold">
+                    {criteria?.approved_by?.name || "-"}
+                  </p>
+                </div>{" "}
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p className="">Izoh</p>
+                  <p className="text-lg font-semibold">
+                    {criteria?.files[0]?.description || "-"}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      )}
-      <div className="grid grid-cols-3 gap-6">
-        {actions?.cases?.map((criteria: any) => {
-          return (
-            <div className="p-3 border border-black/30 rounded-xl">
-              <div className="flex items-center justify-between">
-                <p className="">Yaratilgan sana</p>
-                <p className="text-lg font-semibold">{criteria?.created_at}</p>
+      </Card>
+      <div className="mb-5"></div>
+      <Card>
+        <p className="font-bold mb-5 text-3xl ">Olib tashlangan ballar</p>
+
+        {actions?.removed_cases?.length === 0 && (
+          <div className="flex items-center justify-center mt-4">
+            <p className="text-lg font-semibold">
+              Bu kriteriya bo'yicha ma'lumot topilmadi
+            </p>
+          </div>
+        )}
+        <div className="grid grid-cols-3 gap-6 ">
+          {actions?.removed_cases?.map((criteria: any) => {
+            return (
+              <div className="p-3 border border-black/30 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <p className="">Yaratilgan sana</p>
+                  <p className="text-lg font-semibold">
+                    {criteria?.created_at}
+                  </p>
+                </div>
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p
+                    style={{
+                      color: criteria.removed ? "red" : "green",
+                    }}
+                  >
+                    {criteria.removed ? "Bartaraf etilgan" : "Hisoblangan"} ball
+                  </p>
+                  <p
+                    style={{
+                      color: criteria.removed ? "red" : "green",
+                    }}
+                    className="text-lg font-semibold"
+                  >
+                    <span>
+                      {" "}
+                      {criteria.removed
+                        ? criteria.removed_score
+                        : criteria.added_score}
+                    </span>
+                  </p>
+                </div>
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p className="">Yuklangan fayl</p>
+                  <a href={criteria?.files[0]?.file} target="_blank">
+                    <div className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer ">
+                      <FileIcon />
+                      Fayl
+                    </div>
+                  </a>
+                </div>
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p className="">Ijrochi shaxs</p>
+                  <p className="text-lg font-semibold">
+                    {criteria?.created_by?.name || "-"}
+                  </p>
+                </div>
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p className="">Masul shaxs</p>
+                  <p className="text-lg font-semibold">
+                    {criteria?.approved_by?.name || "-"}
+                  </p>
+                </div>{" "}
+                <hr className="my-2 border-black/30" />
+                <div className="flex items-center justify-between">
+                  <p className="">Izoh</p>
+                  <p className="text-lg font-semibold">
+                    {criteria?.files[0]?.description || "-"}
+                  </p>
+                </div>
               </div>
-              <hr className="my-2 border-black/30" />
-              <div className="flex items-center justify-between">
-                <p
-                  style={{
-                    color: criteria.removed ? "red" : "green",
-                  }}
-                >
-                  {criteria.removed ? "Bartaraf etilgan" : "Hisoblangan"} ball
-                </p>
-                <p
-                  style={{
-                    color: criteria.removed ? "red" : "green",
-                  }}
-                  className="text-lg font-semibold"
-                >
-                  <span>
-                    {" "}
-                    {criteria.removed
-                      ? criteria.removed_score
-                      : criteria.added_score}
-                  </span>
-                </p>
-              </div>
-              <hr className="my-2 border-black/30" />
-              <div className="flex items-center justify-between">
-                <p className="">Yuklangan fayl</p>
-                <a href={criteria?.files[0]?.file} target="_blank">
-                  <div className="py-2 px-3 flex items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer ">
-                    <FileIcon />
-                    Fayl
-                  </div>
-                </a>
-              </div>
-              <hr className="my-2 border-black/30" />
-              <div className="flex items-center justify-between">
-                <p className="">Ijrochi shaxs</p>
-                <p className="text-lg font-semibold">
-                  {criteria?.created_by?.name || "-"}
-                </p>
-              </div>
-              <hr className="my-2 border-black/30" />
-              <div className="flex items-center justify-between">
-                <p className="">Masul shaxs</p>
-                <p className="text-lg font-semibold">
-                  {criteria?.approved_by?.name || "-"}
-                </p>
-              </div>{" "}
-              <hr className="my-2 border-black/30" />
-              <div className="flex items-center justify-between">
-                <p className="">Izoh</p>
-                <p className="text-lg font-semibold">
-                  {criteria?.files[0]?.description || "-"}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </Card>
     </div>
   );
 };

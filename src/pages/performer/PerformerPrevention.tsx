@@ -176,14 +176,19 @@ const PerformerPrevention = () => {
     };
     const formData = new FormData();
     Object.keys(data).forEach((item: any) => {
-      if (item === "file") return;
+      if (item === "files") return;
       formData.append(item, data[item]);
     });
 
-    data.file.forEach((item: any) => {
-      delete item.originFileObj.uid;
-      formData.append("file", item.originFileObj);
+    const filesList = dataPayload.files;
+
+    filesList.forEach((item: any) => {
+      const file = item.files[0].originFileObj;
+      delete file.uid;
+      formData.append("files", file);
+      formData.append("comments", item.comment);
     });
+
     axiosT
       .post("/prevention/create/", formData)
       .then(() => {
@@ -240,7 +245,7 @@ const PerformerPrevention = () => {
         footer={null}
         onCancel={() => setNewPreventionModal(false)}
         onClose={() => setNewPreventionModal(false)}
-        width={"50%"}
+        width={"70%"}
       >
         <>
           <Form
@@ -355,14 +360,14 @@ const PerformerPrevention = () => {
               {files.map((file: any, index: number) => (
                 <Card key={file.id} style={{ marginBottom: 10 }}>
                   <Space direction="vertical">
-                    <Form.Item label="Fayl" name={"file"}>
+                    <Form.Item label="Fayl" name={["files", index, "files"]}>
                       <CustomUpload multiple />
                     </Form.Item>
                     <Form.Item
                       label="Tavsiflar"
                       className="col-span-2"
                       rules={[{ required: true, message: "Majburiy maydon" }]}
-                      name={"description"}
+                      name={["files", index, "comments"]}
                     >
                       <TextArea />
                     </Form.Item>
@@ -389,7 +394,12 @@ const PerformerPrevention = () => {
               Yangi fayl qo‘shish
             </Button>
             <Form.Item label={null}>
-              <Button type="primary" htmlType="submit" loading={loading}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading}
+                className="mt-5"
+              >
                 Yuborish
               </Button>
             </Form.Item>
