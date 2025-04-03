@@ -134,8 +134,6 @@ export const Sidebar: FC<SidebarProps> = React.memo(({ collapsed }) => {
     }
   );
 
-  console.log("rendering sidebar");
-
   return (
     <Sider
       trigger={null}
@@ -166,6 +164,14 @@ export const Sidebar: FC<SidebarProps> = React.memo(({ collapsed }) => {
         }}
         style={{}}
       />
+
+      <p className="text-white text-center px-2 font-medium mt-[334px]">
+        Axborot tizimi{" "}
+        <span className="text-lg font-bold greenImportantColor">
+          <a href="http://technocorp.uz/">Technocorp</a>
+        </span>{" "}
+        tomonidan ishlab chiqilgan
+      </p>
     </Sider>
   );
 });
