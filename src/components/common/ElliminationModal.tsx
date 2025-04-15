@@ -83,11 +83,11 @@ export const ElliminationModal: FC<ElliminationModalProps> = ({
                     options={[
                       {
                         label: "Mamuriy",
-                        value: 1,
+                        value: 2,
                       },
                       {
                         label: "Intizomiy",
-                        value: 2,
+                        value: 1,
                       },
                     ]}
                   />

@@ -1,5 +1,7 @@
 import axiosT from "@/api/axios";
+import { FetchAllExaminationLists } from "@/api/organization";
 import { FileIcon } from "@/assets/icons";
+import { CustomSearchableSelect } from "@/components/common/CustomSearchableSelect";
 import { CustomUpload } from "@/components/common/CustomUpload";
 import { ShoWUploadedFilesWithComments } from "@/components/common/ShowUploadedFileWithComments";
 import { CreateResultForExamination } from "@/components/pages/examination/CreateResultForExamination";
@@ -96,14 +98,15 @@ const { Option } = Select;
 const ExaminationPage = () => {
   const [documentsData, setDocumentsData] = useState([]);
   const [form] = Form.useForm();
-  const [organizationsList, setOrganizationList] = useState([]);
   const [inspectors, setInspectors] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
 
   const [organization_id, setOrganization_id] = useState<number>();
   const [inspectorsForRandomList, setInspectorsForRandomList] = useState([]);
-
+  const [inspectorsForApparatList, setInspectorsForApparatList] = useState([]);
+  const [regionsList, setRegionsList] = useState([]);
+  const [activeRegion, setActiveRegion] = useState<number | null>(null);
   const [organizationParams, setOrganizationParams] = useState({
     category_id: undefined,
     type: undefined,
@@ -119,7 +122,11 @@ const ExaminationPage = () => {
     modal: false,
     item: {},
   });
-  const [activeFiles, setActiveFile] = useState([]);
+  const [activeFiles, setActiveFile] = useState({
+    files: [],
+    result_files: [],
+    measure_files: [],
+  });
 
   const [files, setFiles] = useState([{ id: 1 }]);
 
@@ -145,7 +152,7 @@ const ExaminationPage = () => {
     () => axiosT.get("/examination/list/"),
     {
       onSuccess({ data }) {
-        const arr = data.map((item: any, index: number) => ({
+        const arr = data.results.map((item: any, index: number) => ({
           ...item,
           index: index + 1,
           inspector: (
@@ -161,7 +168,11 @@ const ExaminationPage = () => {
               className="py-2 px-3 flex   items-center gap-2 bg-[#DCE4FF] rounded-[8px] cursor-pointer"
               onClick={() => {
                 setShowFileModal(true);
-                setActiveFile(item.files);
+                setActiveFile({
+                  files: item.files,
+                  measure_files: item.measure_files,
+                  result_files: item.result_files,
+                });
               }}
             >
               <FileIcon />
@@ -188,18 +199,7 @@ const ExaminationPage = () => {
       },
     }
   );
-  useQuery(
-    ["examinationOrganization", organizationParams],
-    () =>
-      axiosT.get("/examination/organization-list/", {
-        params: organizationParams,
-      }),
-    {
-      onSuccess({ data }) {
-        setOrganizationList(data);
-      },
-    }
-  );
+
   useQuery(
     ["examinationInspectors", organizationParams],
     () => axiosT.get("/examination/inspectors/", {}),
@@ -210,12 +210,12 @@ const ExaminationPage = () => {
     }
   );
   useQuery(
-    ["examinationInspectorsForRandom", organizationParams, organization_id],
+    ["examinationInspectorsForRandom", organizationParams, activeRegion],
     () =>
       axiosT.get("/examination/select/", {
         params: {
           category_id: organizationParams.category_id,
-          organization_id: organization_id,
+          region_id: activeRegion,
         },
       }),
     {
@@ -224,6 +224,29 @@ const ExaminationPage = () => {
       },
     }
   );
+  useQuery(
+    ["examinationInspectorsApparat", organizationParams, organization_id],
+    () =>
+      axiosT.get("/examination/select/", {
+        params: {
+          category_id: organizationParams.category_id,
+          region_id: 1,
+          is_apparat: true,
+        },
+      }),
+    {
+      enabled: newPreventionModal,
+
+      onSuccess({ data }) {
+        setInspectorsForApparatList(data);
+      },
+    }
+  );
+  useQuery(["regionsList"], () => axiosT.get("/organizations/regions/"), {
+    onSuccess({ data }) {
+      setRegionsList(data);
+    },
+  });
 
   const onFinish = (dataPayload: any) => {
     setLoading(true);
@@ -234,8 +257,7 @@ const ExaminationPage = () => {
     };
     const formData = new FormData();
     Object.keys(data).forEach((item: any) => {
-      if (item === "files") return;
-      if (item === "inspector") return;
+      if (["files", "inspector", "apparat", "region"].includes(item)) return;
       formData.append(item, data[item]);
     });
 
@@ -249,6 +271,9 @@ const ExaminationPage = () => {
     });
     data.inspector.forEach((item: any) => {
       formData.append("inspector", item);
+    });
+    data.apparat.forEach((item: any) => {
+      formData.append("apparat", item);
     });
     axiosT
       .post("/examination/create/", formData)
@@ -272,8 +297,30 @@ const ExaminationPage = () => {
   useEffect(() => {
     if (!organizationParams.category_id) {
       form.setFieldValue("organization", null);
+      form.setFieldValue("region", null);
     }
-  }, [organizationParams.category_id]);
+
+    if (activeRegion) {
+      form.setFieldValue("inspector", []);
+    }
+  }, [organizationParams.category_id, activeRegion]);
+
+  const randomHandlerForApparat = () => {
+    const random: any = Math.floor(
+      Math.random() * inspectorsForApparatList.length
+    );
+
+    const inspector: any = inspectorsForApparatList[random];
+    form.setFieldValue(
+      "apparat",
+      Array.from(new Set([...form.getFieldValue("apparat"), inspector.id]))
+    );
+    setInspectorsForApparatList(
+      inspectorsForApparatList.filter(
+        (_: any, index: number) => random !== index
+      )
+    );
+  };
 
   return (
     <div className="px-4 py-5">
@@ -314,6 +361,7 @@ const ExaminationPage = () => {
             name="newPrevention"
             initialValues={{
               inspector: [],
+              apparat: [],
             }}
           >
             <div className="grid grid-cols-2 gap-3">
@@ -368,49 +416,104 @@ const ExaminationPage = () => {
                 rules={[{ required: true, message: "Majburiy maydon" }]}
                 name={"organization"}
               >
+                <CustomSearchableSelect
+                  selectProps={{
+                    filterOption: false,
+                    placeholder: "Tashkilotni tanlash",
+                    showSearch: true,
+                    allowClear: true,
+                    disabled: !organizationParams.category_id,
+                    onChange: (value: number) => {
+                      setOrganization_id(value);
+                    },
+                    optionRender: (optiondata: any) => {
+                      const option = optiondata.data as any;
+
+                      return (
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-xs">
+                            {option.label} ({option.inn})
+                          </h2>
+
+                          <span
+                            style={{
+                              backgroundColor:
+                                statusOptions[option.status]?.color,
+                            }}
+                            className="px-2 py-1 rounded-lg text-black"
+                          >
+                            {statusOptions[option.status]?.title}
+                          </span>
+                        </div>
+                      );
+                    },
+                  }}
+                  fetchOptions={FetchAllExaminationLists}
+                  promiseOptions={{
+                    ...organizationParams,
+                    enable: newPreventionModal,
+                  }}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Markaziy apparat xodimlari"
+                name={"apparat"}
+                className="col-span-2"
+                rules={[{ required: true, message: "Majburiy maydon" }]}
+              >
                 <Select
-                  placeholder="Tashkilotni tanlash"
-                  options={organizationsList.map((item: any) => ({
-                    value: item.id,
-                    label: item.name,
-                    status: item.risk_status,
-                    inn: item.inn,
-                  }))}
-                  disabled={!organizationParams.category_id}
-                  optionRender={(optiondata: any) => {
-                    const option = optiondata.data as any;
-
+                  disabled={!organization_id}
+                  placeholder="Tanlash"
+                  mode="multiple"
+                  dropdownRender={(menu) => {
                     return (
-                      <div className="flex items-center justify-between">
-                        <h2 className="text-xs">
-                          {option.label} ({option.inn})
-                        </h2>
+                      <>
+                        <div className="mb-4">{menu}</div>
 
-                        <span
-                          style={{
-                            backgroundColor:
-                              statusOptions[option.status]?.color,
+                        <button
+                          className="bg-[#4E75FF] rounded-sm py-2 px-6 text-white cursor-pointer"
+                          onClick={() => {
+                            randomHandlerForApparat();
                           }}
-                          className="px-2 py-1 rounded-lg text-black"
                         >
-                          {statusOptions[option.status]?.title}
-                        </span>
-                      </div>
+                          Random tanlash
+                        </button>
+                      </>
                     );
                   }}
+                >
+                  {inspectors.map((item: any) => (
+                    <Option disabled value={item.id} key={item.id}>
+                      {item.full_name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label="Hududlar"
+                name={"region"}
+                rules={[{ required: true, message: "Majburiy maydon" }]}
+              >
+                <Select
+                  disabled={!organizationParams.category_id}
+                  placeholder="Tanlash"
+                  options={regionsList.map((region: any) => ({
+                    value: region.id,
+                    label: region.name,
+                  }))}
                   onChange={(value: number) => {
-                    setOrganization_id(value);
+                    setActiveRegion(value);
                   }}
                 />
               </Form.Item>
               <Form.Item
                 label="Inspektor"
                 name={"inspector"}
-                className="col-span-2"
+                // className="col-span-2"
                 rules={[{ required: true, message: "Majburiy maydon" }]}
               >
                 <Select
-                  disabled={!organization_id}
+                  disabled={!activeRegion}
                   placeholder="Tanlash"
                   mode="multiple"
                   dropdownRender={(menu) => {
@@ -539,6 +642,7 @@ const ExaminationPage = () => {
         setModalOpen={() => {
           setResultModal({ item: {}, modal: false });
         }}
+        refetchList={refetch}
       />
     </div>
   );

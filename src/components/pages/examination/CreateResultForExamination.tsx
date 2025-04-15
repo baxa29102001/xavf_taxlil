@@ -20,11 +20,12 @@ const { TextArea } = Input;
 interface CreateResultForExaminationProps {
   modalOpen: boolean;
   setModalOpen: () => void;
+  refetchList: () => void;
   criteria: any;
 }
 export const CreateResultForExamination: FC<
   CreateResultForExaminationProps
-> = ({ modalOpen, criteria, setModalOpen }) => {
+> = ({ modalOpen, criteria, setModalOpen, refetchList }) => {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
@@ -69,6 +70,7 @@ export const CreateResultForExamination: FC<
           content: "Muaffaqiyatli yaratildi",
         });
         form.resetFields();
+        refetchList();
       })
       .catch(() => {
         console.log("err");

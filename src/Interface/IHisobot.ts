@@ -91,3 +91,10 @@ export interface IActionTakenByProfilatikaByOrganization {
   distributing_materials: number;
   sending_guidelines: number;
 }
+export interface IActionTakenByExaminationByOrganization {
+  tekshiruvlar_soni: number;
+  korsatmalar_soni: number;
+  taqdimnomalar_soni: number;
+  intizomiy_soni: number;
+  mamuriy_soni: number;
+}

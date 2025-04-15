@@ -27,3 +27,39 @@ createRoot(document.getElementById("root")!).render(
     </AuthContextProvider>
   </QueryClientProvider>
 );
+
+const input = {
+  a: {
+    b: {
+      c: {
+        f: 4,
+        v: 5,
+      },
+      d: 2,
+    },
+    e: 3,
+  },
+  f: 4,
+};
+
+function flattenObject(input: any) {
+  let output: any = {};
+
+  if (Object.keys(input).every((key) => typeof input[key] !== "object"))
+    return input;
+
+  Object.keys(input).forEach((key) => {
+    if (typeof input[key] === "object") {
+      Object.keys(input[key]).forEach((childKey) => {
+        output[`${key}.${childKey}`] = input[key][childKey];
+      });
+
+      return;
+    }
+    output[key] = input[key];
+  });
+
+  flattenObject(output);
+}
+
+flattenObject(input);

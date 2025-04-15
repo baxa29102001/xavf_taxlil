@@ -123,9 +123,9 @@ const EntityCriteriaDetail = () => {
                   </p>
                 </div>{" "}
                 <hr className="my-2 border-black/30" />
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <p className="">Izoh</p>
-                  <p className="text-lg font-semibold">
+                  <p className="text-sm font-medium">
                     {criteria?.files[0]?.description || "-"}
                   </p>
                 </div>
@@ -205,7 +205,7 @@ const EntityCriteriaDetail = () => {
                 <hr className="my-2 border-black/30" />
                 <div className="flex items-center justify-between">
                   <p className="">Izoh</p>
-                  <p className="text-lg font-semibold">
+                  <p className="text-sm">
                     {criteria?.files[0]?.description || "-"}
                   </p>
                 </div>

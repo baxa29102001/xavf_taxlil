@@ -5,8 +5,19 @@ import { Modal } from "antd";
 interface ShoWUploadedFilesWithCommentsProps {
   isModalOpen: boolean;
   setIsModalOpen: () => void;
-  files: filesProp[];
+  files: {
+    files: filesProp[];
+    result_files: filesProp[];
+    measure_files: filesProp[];
+  };
 }
+
+const fileType = new Map([
+  [1, "Ko'rsatma"],
+  [2, "Taqdimnoma"],
+  [3, "Ma'muriy chora"],
+  [4, "Intizomiy chora"],
+]);
 
 export const ShoWUploadedFilesWithComments: FC<
   ShoWUploadedFilesWithCommentsProps
@@ -19,10 +30,25 @@ export const ShoWUploadedFilesWithComments: FC<
       onCancel={() => {
         setIsModalOpen();
       }}
-      width={"50%"}
+      width={"80%"}
     >
-      <div className="mt-6   gap-3">
-        <FilesBlock title="Yuklangan fayllar" files={files} />
+      <div className="my-6 gap-3">
+        <FilesBlock title="Yuklangan fayllar" files={files.files} />
+        <FilesBlock title="Tekshirish natijalari" files={files.result_files} />
+        <FilesBlock
+          title="Ko'rilgan choralar"
+          files={files.measure_files}
+          extraField={(item) => {
+            return (
+              <>
+                <p>
+                  <span className="font-semibold">Hujjat turi:</span>
+                  {fileType.get(item.file_type)}
+                </p>
+              </>
+            );
+          }}
+        />
       </div>
     </Modal>
   );

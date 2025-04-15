@@ -1,6 +1,10 @@
 import { useQuery } from "react-query";
 import axiosT from "@/api/axios.ts";
-import { IStatusBuCategory } from "@/Interface/IHisobot.ts";
+import {
+  CategoryField,
+  IActionTakenByMainCategory,
+  IStatusBuCategory,
+} from "@/Interface/IHisobot.ts";
 import { Button, DatePicker, Input, Select, Space, Table } from "antd";
 import { useState } from "react";
 import useDebouncedValue from "@/hooks/use-debounced-value.tsx";
@@ -15,51 +19,45 @@ const { Search } = Input;
 
 const columns = [
   {
-    title: "INN",
-    dataIndex: "inn",
-    key: "inn",
-  },
-  {
     title: "Tadbirkorlik subyekti nomi",
-    dataIndex: "total_cases_count",
-    key: "total_cases_count",
+    dataIndex: "category",
+    key: "category",
   },
+
   {
     title: "Tekshirishlar soni",
-    dataIndex: "clear_cases_count",
-    key: "clear_cases_count",
+    dataIndex: "examinations",
+    key: "examinations",
   },
   {
     title: "Profilaktikalar soni",
-    dataIndex: "approved_count",
-    key: "approved_count",
+    dataIndex: "instructions",
+    key: "instructions",
   },
   {
     title: "Chiqarilgan ko‘rsatmalar soni",
-    dataIndex: "rejected_count",
-    key: "rejected_count",
+    dataIndex: "submissions",
+    key: "submissions",
   },
-  {
-    title: "Chiqarilgan taqdimnomalar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
-  },
+
   {
     title: "Ko‘rilgan intizomiy choralar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "disciplinary",
+    key: "disciplinary",
   },
   {
     title: "Ko‘rilgan maʼmuriy choralar soni",
-    dataIndex: "in_progress_count",
-    key: "in_progress_count",
+    dataIndex: "administrative",
+    key: "administrative",
   },
 ];
 
 const Index = () => {
   const currentYear = dayjs().year();
 
-  const [dataSource, setDataSource] = useState<IStatusBuCategory[]>([]);
+  const [dataSource, setDataSource] = useState<IActionTakenByMainCategory[]>(
+    []
+  );
 
   const [searchText, setSearchText] = useState("");
   const [quarter, setQuarter] = useState<number>();
@@ -80,8 +78,8 @@ const Index = () => {
   const { isLoading } = useQuery(
     ["case-status-by-category", searchValue, year, quarter],
     () =>
-      axiosT.get<{ categories: IStatusBuCategory[] }>(
-        `/reports/case-status-by-category/`,
+      axiosT.get<IActionTakenByMainCategory[]>(
+        `/reports/report-by-examination-category/`,
         {
           params: {
             year: year,
@@ -92,7 +90,7 @@ const Index = () => {
       ),
     {
       onSuccess({ data }) {
-        setDataSource(data.categories);
+        setDataSource(data);
       },
     }
   );
@@ -159,7 +157,7 @@ const Index = () => {
 
       <div ref={contentRef}>
         <Table
-          dataSource={[]}
+          dataSource={dataSource}
           columns={columns}
           loading={isLoading}
           locale={{
