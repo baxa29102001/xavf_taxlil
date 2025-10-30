@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosT = axios.create({
-  baseURL: "https://rkjp.technocorp.uz/api",
+  baseURL: "https://xavf.religions.uz/api",
   withCredentials: true,
 });
 

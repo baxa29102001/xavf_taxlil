@@ -148,9 +148,9 @@ export const Sidebar: FC<SidebarProps> = React.memo(({ collapsed }) => {
     >
       <Link to={"/"}>
         <div className="flex items-center gap-2 py-10 px-2">
-          <img src="/logo.svg" />
+          <img className="w-[40px] h-[40px]" src="/logo.jpg" />
           {!collapsed && (
-            <h2 className="text-white">“OʻZKOMNAZORAT” INSPEKSIYASI</h2>
+            <h2 className="text-white">O‘zbekiston Respublikаsi Din ishlаri bo‘yichа qo‘mitаsi</h2>
           )}{" "}
         </div>
       </Link>

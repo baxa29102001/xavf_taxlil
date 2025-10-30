@@ -47,6 +47,7 @@ const Index = () => {
       axiosT.get<{ id: number; name: string }[]>(`organizations/select/`, {
         params: {
           category_id: categoryId,
+          parent_orgs: true,
           has_score: true,
         },
       }),
@@ -89,7 +90,7 @@ const Index = () => {
             year: year,
             search: searchValue,
             quarter: quarter,
-            organization_id: 40,
+            organization_id: organizationId,
           },
         }
       ),
@@ -97,6 +98,7 @@ const Index = () => {
       onSuccess({ data }) {
         setDataSource(data.regions);
       },
+      enabled: !!organizationId,
     }
   );
 

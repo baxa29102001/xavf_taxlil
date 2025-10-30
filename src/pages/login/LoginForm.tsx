@@ -55,11 +55,11 @@ const LoginForm = () => {
       <div className="flex items-center">
         <div className="bg-[#1C5196] px-[62px] py-[81px] h-screen">
           <div className="flex flex-col justify-between items-center">
-            <h2 className="text-[32px] text-white text-center w-[525px] mb-20 Monstreat">
-              “OʻZKOMNAZORAT” INSPEKSIYASI
+            <h2 className="text-[32px] text-white text-center w-[525px] mb-20 Monstreat uppercase">
+             O‘zbekiston Respublikаsi Din ishlаri bo‘yichа qo‘mitаsi
             </h2>
             <div className="flex items-end  justify-center mb-30">
-              <img src={"/logo.svg"} alt="" className="w-[400px] h-[500px]" />
+              <img src={"/logo.jpg"} alt="" className="w-[400px] h-[400px]" />
             </div>
 
             <p className="text-white font-medium">
