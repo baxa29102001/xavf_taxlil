@@ -1,7 +1,6 @@
 import axiosT from "@/api/axios";
-import AuthContext from "@/context/authContext";
 import { useDetectRoles } from "@/hooks/useDetectRoles";
-import { FC, useContext, useState } from "react";
+import { FC,  useState } from "react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 

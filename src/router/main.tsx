@@ -280,6 +280,19 @@ function getSuitableRoutes(role: ROLES) {
           element: <Navigate to="/rahbar" replace />,
         },
       ];
+    case ROLES.MARKAZIY_APPARAT:
+      return [
+        {
+          path: "/markaziy_apparat",
+          element: <MainLayout />,
+          children: Routes,
+        },
+
+        {
+          path: "*",
+          element: <Navigate to="/markaziy_apparat" replace />,
+        },
+      ];
     default:
       return [];
   }

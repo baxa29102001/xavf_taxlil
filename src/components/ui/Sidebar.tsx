@@ -108,6 +108,8 @@ const getRoutesForRole = (role: ROLES, notificationCount: number) => {
           label: <span className="text-base font-medium">Hisobot</span>,
         },
       ];
+    case ROLES.MARKAZIY_APPARAT:
+      return routesOption(0);
     default:
       [];
   }
@@ -150,7 +152,9 @@ export const Sidebar: FC<SidebarProps> = React.memo(({ collapsed }) => {
         <div className="flex items-center gap-2 py-10 px-2">
           <img className="w-[40px] h-[40px]" src="/logo.jpg" />
           {!collapsed && (
-            <h2 className="text-white">O‘zbekiston Respublikаsi Din ishlаri bo‘yichа qo‘mitаsi</h2>
+            <h2 className="text-white">
+              O‘zbekiston Respublikаsi Din ishlаri bo‘yichа qo‘mitаsi
+            </h2>
           )}{" "}
         </div>
       </Link>

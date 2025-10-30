@@ -371,6 +371,16 @@ const PerformerDocuments = () => {
             + Ma'lumot kiritish
           </button>
         )}
+        {config?.role === ROLES.MARKAZIY_APPARAT && (
+          <button
+            className="bg-[#4E75FF] rounded-sm py-2 px-6 text-white cursor-pointer"
+            onClick={() => {
+              navigate("/markaziy_apparat/documents/category");
+            }}
+          >
+            + Ma'lumot kiritish
+          </button>
+        )}
       </div>
       <div className="flex items-center gap-2 bg-white w-max p-1 mb-6">
         {BTNS.map((btn: any) => (

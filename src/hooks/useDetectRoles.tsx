@@ -19,6 +19,10 @@ const RolesPermissions = (role: ROLES) => {
       mainUrl: "rahbar",
       role: ROLES.RAHBAR,
     },
+     {
+      mainUrl: "markaziy_apparat",
+      role: ROLES.MARKAZIY_APPARAT,
+    },
   ];
 
   return arr.find((item) => item.role === role);
